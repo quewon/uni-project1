@@ -108,10 +108,21 @@
       #tooltip.hidden {
         transition: opacity 0.5s;
       }
+
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--ui)
+      }
     </style>
   </head>
   <body>
-    <div id="title">
+    <div id="loading">
+      *
+    </div>
+    <div id="title" class="hidden">
       <a href="page2.html">🤖</a><a href="page3.html">🌟</a><br>
       <a href="page4.html" style="margin-bottom:0">🌃</a><a href="page5.html" style="margin-bottom:0">🐑</a>
     </div>
@@ -161,6 +172,29 @@
       ]
     ];
 
+    var _loading = document.getElementById("loading");
+    window.onload = function() {
+      let loading = setInterval(function() {
+        _loading.textContent = config.stars[Math.random() * config.stars.length | 0];
+
+        loaded = true;
+
+        check: for (lib in sound) {
+          for (sfx in sound[lib]) {
+            if (sound[lib][sfx].state() != "loaded") loaded = false;
+            break check;
+          }
+        }
+
+        if (loaded) {
+          update();
+          document.getElementById("title").classList.remove("hidden");
+          _loading.classList.add("hidden");
+          clearInterval(loading);
+        }
+      }, 100)
+    }
+
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     var config = {
@@ -169,8 +203,6 @@
       lifespan: 3 * window.innerWidth,
     };
     var timer = 0;
-
-    update();
 
     function update() {
       if (timer % config.speed == 0) {
