@@ -63,6 +63,13 @@
         transition: 0.5s;
       }
 
+      .centered {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
       @keyframes glow {
         from {
           text-shadow: 0 0 20px var(--star), 0 0 10px var(--star);
@@ -72,20 +79,9 @@
         }
       }
 
-      #title {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        left: 50%;
-        top: 50%;
-        color: var(--ui);
-        font-size: 0.9em;
-        text-align: center;
-        z-index: 10;
-      }
-
       a {
-        width: 5em;
-        height: 5em;
+        width: fit-content;
+        height: fit-content;
         display: inline-block;
         border: 1px solid var(--ui);
         background-color: transparent;
@@ -103,16 +99,19 @@
       a:hover {
         border: 1px solid var(--bg);
         background-color: var(--ui);
-        color: var(--bg);
         cursor: pointer;
       }
       a:active {
         opacity: 0.5;
       }
 
+      a#intro {
+        border: none;
+      }
+
       a img {
-        width: inherit;
-        height: inherit;
+        width: 5em;
+        height: 5em;
       }
 
       hr {
@@ -145,18 +144,37 @@
         opacity: 0.75;
         z-index: -10;
         fill-rule: nonzero;
+        position:fixed; top:0; left:0; height:100%; width:100%
       }
-      svg { position:fixed; top:0; left:0; height:100%; width:100% }
+
+      path {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+        animation: dash 5s;
+        transition: 0.5s;
+      }
+
+      @keyframes dash {
+        from {
+          stroke-dashoffset: 1;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
     </style>
   </head>
   <body>
     <div id="loading">
       *
     </div>
-    <div id="title" class="hidden">
+    <div id="title" class="hidden centered" style="display:none">
       <a href="page2.html"><img src="img/robot.png"></a><a href="page3.html"><img src="img/star.png"></a><br>
       <a href="page4.html" style="margin-bottom:0"><img src="img/sheep.png"></a><a href="page5.html" style="margin-bottom:0"><img src="img/sheep.png"></a>
     </div>
+    <a id="intro" class="centered" onclick="init()">
+      "인공위성 보기 좋은 날이야."
+    </a>
     <svg id="line" preserveAspectRatio="none"></svg>
   </body>
 
@@ -219,8 +237,7 @@
         }
 
         if (loaded) {
-          update();
-          document.getElementById("title").classList.remove("hidden");
+          document.getElementById("intro").classList.remove("hidden");
           _loading.classList.add("hidden");
           clearInterval(loading);
         }
@@ -235,13 +252,20 @@
       }
     }
 
+    function init() {
+      document.getElementById("title").style.display = "block";
+      document.getElementById("title").classList.remove("hidden");
+      document.getElementById("intro").remove();
+      update();
+    }
+
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     var config = {
       speed: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      lifespan: 3.5 * window.innerWidth,
-      consistency: 500,
+      lifespan: 4 * window.innerWidth,
+      consistency: 1000,
     };
     var timer = 0;
 
@@ -358,26 +382,29 @@
 
     var _line = document.getElementById("line");
     var firstCoords = { x: undefined, y: undefined };
+    var lineElements = [];
     function drawLine(star) {
       var rect = star.getBoundingClientRect();
       var x = rect.left + (rect.width / 2);
       var y = rect.top + (rect.height / 2);
 
-      var line = _line.querySelector("path");
+      var line = _line.querySelectorAll("path");
+      var line = line[line.length - 1];
 
-      if (typeof(line) != undefined && line != null) {
+      if (typeof(line) != undefined && line != null && !line.getAttribute('d').includes('Z')) {
         let d = line.getAttribute('d');
 
         if (x == firstCoords.x && y == firstCoords.y) {
           line.setAttribute('d', d+" Z");
+          Array.from(document.querySelectorAll('.selected')).forEach((el) => el.classList.remove('selected'));
+          setInterval(function() {
+            line.classList.add("hidden");
+            setInterval(function() {
+              line.remove();
+            }, 500);
+          }, config.lifespan);
         } else {
-          if (d.charAt(d.length - 1) == "Z") {
-            firstCoords.x = x;
-            firstCoords.y = y;
-            line.setAttribute('d', d+" M "+x+" "+y);
-          } else {
-            line.setAttribute('d', d+" "+x+" "+y);
-          }
+          line.setAttribute('d', d+" "+x+" "+y);
         }
         return
       }
@@ -385,6 +412,7 @@
       var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
       l.setAttribute('d', "M "+x+" "+y);
       l.setAttribute("vector-effect", "non-scaling-stroke");
+      l.setAttribute("pathLength", 1);
       firstCoords.x = x;
       firstCoords.y = y;
       _line.append(l);
