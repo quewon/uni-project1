@@ -2,24 +2,26 @@
 <html lang="ko" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>🤖⭐</title>
+    <title>인공위성 보기 좋은 날</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
 
       @media only screen and (max-width: 600px) {
         html {
-          font-size: 2em;
+          font-size: 1.25em;
         }
       }
 
       html {
-        font-family: monospace, 'Nanum Gothic Coding';
+        font-family: 'Nanum Gothic Coding', monospace;
         --star: #faecd4;
         --ui: #6c9bb8;
         --bg: #172445;
       }
 
       body {
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         background-color: var(--bg);
         -webkit-touch-callout: none; /* iOS Safari */
@@ -40,17 +42,21 @@
       .star {
         position: absolute;
         color: var(--star);
-        /* transition: 0.5s; */
+        /* transition: 0.25s; */
         z-index: -1;
-        cursor: help;
+        cursor: pointer;
         text-align: center;
 
         animation: glow 1s ease infinite alternate;
       }
 
-      .one { opacity: 0.75; }
-      .two { opacity: 0.5; }
-      .three { opacity: 0.25; }
+      .one { opacity: 1; }
+      .two { opacity: 0.75; }
+      .three { opacity: 0.5; }
+
+      .small { font-size: 1em }
+      .medium { font-size: 1.25em }
+      .big { font=size: 1.5em }
 
       .hidden {
         opacity: 0 !important;
@@ -78,6 +84,8 @@
       }
 
       a {
+        width: 5em;
+        height: 5em;
         display: inline-block;
         border: 1px solid var(--ui);
         background-color: transparent;
@@ -85,11 +93,12 @@
         font-size: 1em;
         text-decoration: none;
         color: var(--star);
-        padding: 1em;
+        /* padding: 1em; */
         margin-left: 0.5em;
         margin-right: 0.5em;
         margin-bottom: 1em;
         transition: border 0.3s, background-color 0.3s, color 0.3s;
+        /* box-sizing: border-box; */
       }
       a:hover {
         border: 1px solid var(--bg);
@@ -99,6 +108,11 @@
       }
       a:active {
         opacity: 0.5;
+      }
+
+      a img {
+        width: inherit;
+        height: inherit;
       }
 
       hr {
@@ -112,8 +126,8 @@
         transition: opacity 0.25s;
         margin-top: 0.5em;
       }
-      #tooltip.hidden {
-        transition: opacity 0.5s;
+      .selected .tooltip {
+        opacity: 1 !important;
       }
 
       #loading {
@@ -123,6 +137,16 @@
         transform: translate(-50%, -50%);
         color: var(--ui)
       }
+
+      #line {
+        stroke: var(--star);
+        stroke-width: 0.1em;
+        fill: var(--ui);
+        opacity: 0.75;
+        z-index: -10;
+        fill-rule: nonzero;
+      }
+      svg { position:fixed; top:0; left:0; height:100%; width:100% }
     </style>
   </head>
   <body>
@@ -130,9 +154,10 @@
       *
     </div>
     <div id="title" class="hidden">
-      <a href="page2.html">🤖</a><a href="page3.html">🌟</a><br>
-      <a href="page4.html" style="margin-bottom:0">🌃</a><a href="page5.html" style="margin-bottom:0">🐑</a>
+      <a href="page2.html"><img src="img/robot.png"></a><a href="page3.html"><img src="img/star.png"></a><br>
+      <a href="page4.html" style="margin-bottom:0"><img src="img/sheep.png"></a><a href="page5.html" style="margin-bottom:0"><img src="img/sheep.png"></a>
     </div>
+    <svg id="line" preserveAspectRatio="none"></svg>
   </body>
 
   <script src="sound/howler.core.js"></script>
@@ -199,7 +224,15 @@
           _loading.classList.add("hidden");
           clearInterval(loading);
         }
-      }, 100)
+      }, 100);
+
+      document.body.onclick = function() {
+        var line = _line.querySelector("path");
+        if (typeof(line) != undefined && line != null) {
+          line.remove();
+        }
+        Array.from(document.querySelectorAll('.selected')).forEach((el) => el.classList.remove('selected'));
+      }
     }
 
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -207,7 +240,8 @@
     var config = {
       speed: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      lifespan: 3 * window.innerWidth,
+      lifespan: 3.5 * window.innerWidth,
+      consistency: 500,
     };
     var timer = 0;
 
@@ -231,36 +265,64 @@
 
         star.onmouseleave = function() {
           tooltip.classList.add("hidden");
-        }
+        };
 
-        document.body.appendChild(star);
+        star.onclick = function(e) {
+          e.stopPropagation();
+          drawLine(star);
+          star.classList.add("selected");
+        };
+
         setTimeout(function() {
+          document.body.appendChild(star);
           star.classList.add("star");
 
-          var random = Math.floor(Math.random() * 3);
+          var opacity = Math.floor(Math.random() * 3);
+          var volume = Math.floor(Math.random() * 3);
+          var size;
 
-          sound[random][type].play();
-
-          switch (random) {
+          switch (volume) {
             case 0:
-              random = "one";
+              sound[opacity][type].volume(0.6);
+              size = "small";
               break;
             case 1:
-              random = "two";
+              sound[opacity][type].volume(0.8);
+              size = "medium";
               break;
             case 2:
-              random = "three";
+              sound[opacity][type].volume(1);
+              size = "big";
               break;
           }
-          star.classList.add(random);
 
-          setTimeout(function() {
+          sound[opacity][type].play();
+
+          switch (opacity) {
+            case 0:
+              opacity = "one";
+              break;
+            case 1:
+              opacity = "two";
+              break;
+            case 2:
+              opacity = "three";
+              break;
+          }
+          star.classList.add(opacity);
+          star.classList.add(size);
+
+          var starInterval = setInterval(function() {
+            if (star.classList.contains("selected")) return
+
             star.classList.add("hidden");
+            star.onclick = null;
             setTimeout(function() {
               star.remove();
-            }, 1000)
+              clearInterval(starInterval);
+            }, 1000);
           }, config.lifespan);
-        }, 100 + (Math.random() * config.lifespan))
+        }, 100 + (Math.random() * (config.lifespan - config.consistency) + config.consistency))
 
         // 일정간격
         // config.lifespan / 2
@@ -292,6 +354,40 @@
       }
 
       return t
+    }
+
+    var _line = document.getElementById("line");
+    var firstCoords = { x: undefined, y: undefined };
+    function drawLine(star) {
+      var rect = star.getBoundingClientRect();
+      var x = rect.left + (rect.width / 2);
+      var y = rect.top + (rect.height / 2);
+
+      var line = _line.querySelector("path");
+
+      if (typeof(line) != undefined && line != null) {
+        let d = line.getAttribute('d');
+
+        if (x == firstCoords.x && y == firstCoords.y) {
+          line.setAttribute('d', d+" Z");
+        } else {
+          if (d.charAt(d.length - 1) == "Z") {
+            firstCoords.x = x;
+            firstCoords.y = y;
+            line.setAttribute('d', d+" M "+x+" "+y);
+          } else {
+            line.setAttribute('d', d+" "+x+" "+y);
+          }
+        }
+        return
+      }
+
+      var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      l.setAttribute('d', "M "+x+" "+y);
+      l.setAttribute("vector-effect", "non-scaling-stroke");
+      firstCoords.x = x;
+      firstCoords.y = y;
+      _line.append(l);
     }
   </script>
 </html>
