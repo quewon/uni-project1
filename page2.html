@@ -3,7 +3,18 @@
   <head>
     <meta charset="utf-8">
     <title>로봇 방물관</title>
-    <style media="screen">
+    <style>
+      html {
+        font-family: 'Nanum Gothic Coding', monospace;
+        --star: #faecd4;
+        --ui: #6c9bb8;
+        --bg: #172445;
+      }
+
+      body {
+        background-color: var(--bg);
+      }
+
       canvas {
         position: absolute;
         transform: translate(-50%, -50%);
@@ -31,7 +42,7 @@
       tilesY: 13,
       viewport: 20,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      updateSpeed: 100,
+      updateSpeed: 150,
     };
 
     var tiles = {
@@ -187,8 +198,6 @@
         clearInterval(_loop);
         playerUpdate();
         _loop = setInterval(playerUpdate, config.updateSpeed);
-
-        console.log(chars.player.history)
       });
       document.addEventListener("keyup", function(e) {
         let k = e.keyCode;
@@ -207,6 +216,7 @@
 
     function draw() {
       _main.clearRect(0, 0, cX*cs, cY*cs);
+      _bg.clearRect(0, 0, cX*cs, cY*cs);
 
       let vy = 0;
       let vmax = config.viewport;
@@ -229,18 +239,21 @@
           if (cmap[y][x] == 1) {
             _bg.fillStyle = Math.floor(Math.random()*16777215).toString(16);
           } else {
-            _bg.fillStyle = "white";
+            _bg.fillStyle = "transparent";
           }
           _bg.fillRect(x*cs, i*cs, cs, cs);
 
           // 블렌딩모드
-          _bg.globalCompositeOperation = "hue";
-          _bg.fillStyle = "gray";
+          _bg.globalCompositeOperation = "color";
+          _bg.fillStyle = "#172445";
           _bg.fillRect(x*cs, i*cs, cs, cs);
+          // _bg.globalCompositeOperation = "color-burn"; //디스코
+          // _bg.fillStyle = "#172445";
+          // _bg.fillRect(x*cs, i*cs, cs, cs);
 
           // ch
           if (smap[y][x] == "P") {
-            _main.fillStyle = "blue";
+            _main.fillStyle = "#faecd4";
             _main.fillRect(x*cs, i*cs, cs, cs);
           }
         }
@@ -308,7 +321,7 @@
 
           if (p.pos.x >= smap[p.pos.y].length) {
             p.pos.x = 0;
-          } else if (p.pos.x <= 0) {
+          } else if (p.pos.x < 0) {
             p.pos.x = smap[p.pos.y].length - 1
           }
 
@@ -396,24 +409,6 @@
       }
 
       cs = Math.floor(_canvas.width / cX);
-
-      _bg.beginPath();
-      for (let y=0; y<=config.viewport; y++) {
-        for (let x in cmap[y]) {
-          _bg.globalCompositeOperation = "source-over";
-          if (cmap[y][x] == 1) {
-            _bg.fillStyle = Math.floor(Math.random()*16777215).toString(16);
-          } else {
-            _bg.fillStyle = "white";
-          }
-          _bg.fillRect(x*cs, y*cs, cs, cs);
-
-          // 블렌딩모드
-          _bg.globalCompositeOperation = "hue";
-          _bg.fillStyle = "gray";
-          _bg.fillRect(x*cs, y*cs, cs, cs);
-        }
-      }
 
       chars.player.pos.y = tiles.drops[0].length - 2;
       chars.player.pos.x = (spawn*tiles.drops[0][0].length) + Math.floor(tiles.drops[0][0].length / 2);
