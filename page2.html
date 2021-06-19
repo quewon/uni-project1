@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>로봇 방물관</title>
+    <style media="screen">
+      canvas {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+      }
+
+      .hidden {
+        opacity: 0 !important;
+        transition: 0.5s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+      *
+    </div>
+    <canvas class="hidden" id="bg" width="300" height="300"></canvas>
+    <canvas class="hidden" id="main" width="300" height="300"></canvas>
+  </body>
+  <script src="sound/howler.core.js"></script>
+  <script type="text/javascript">
+    var config = {
+      tilesX: 4,
+      tilesY: 13,
+      viewport: 15,
+      stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
+      updateSpeed: 100,
+    };
+
+    var tiles = {
+      drops: [
+        [
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 0, 0, 0, 1]
+        ],
+        [
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0]
+        ]
+      ],
+      landings: [
+        [
+          [1, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ],
+        [
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ]
+      ],
+      rooms: [
+        [
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ],
+        [
+          [1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ],
+        [
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ],
+        [
+          [1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ],
+        [
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1]
+        ]
+      ]
+    };
+
+    var sound = [
+      [
+        new Howl({src: "sound/0_0.wav"}),
+        new Howl({src: "sound/0_1.wav"}),
+        new Howl({src: "sound/0_2.wav"}),
+        new Howl({src: "sound/0_3.wav"}),
+        new Howl({src: "sound/0_4.wav"}),
+        new Howl({src: "sound/0_5.wav"}),
+        new Howl({src: "sound/0_6.wav"}),
+        new Howl({src: "sound/0_7.wav"}),
+        new Howl({src: "sound/0_8.wav"}),
+        new Howl({src: "sound/0_9.wav"}),
+        new Howl({src: "sound/0_10.wav"}),
+      ],
+      [
+        new Howl({src: "sound/1_0.wav"}),
+        new Howl({src: "sound/1_1.wav"}),
+        new Howl({src: "sound/1_2.wav"}),
+        new Howl({src: "sound/1_3.wav"}),
+        new Howl({src: "sound/1_4.wav"}),
+        new Howl({src: "sound/1_5.wav"}),
+        new Howl({src: "sound/1_6.wav"}),
+        new Howl({src: "sound/1_7.wav"}),
+        new Howl({src: "sound/1_8.wav"}),
+        new Howl({src: "sound/1_9.wav"}),
+        new Howl({src: "sound/1_10.wav"}),
+      ],
+      [
+        new Howl({src: "sound/2_0.wav"}),
+        new Howl({src: "sound/2_1.wav"}),
+        new Howl({src: "sound/2_2.wav"}),
+        new Howl({src: "sound/2_3.wav"}),
+        new Howl({src: "sound/2_4.wav"}),
+        new Howl({src: "sound/2_5.wav"}),
+        new Howl({src: "sound/2_6.wav"}),
+        new Howl({src: "sound/2_7.wav"}),
+        new Howl({src: "sound/2_8.wav"}),
+        new Howl({src: "sound/2_9.wav"}),
+        new Howl({src: "sound/2_10.wav"}),
+      ]
+    ];
+
+    var _loading = document.getElementById("loading");
+    window.onload = function() {
+      let loading = setInterval(function() {
+        _loading.textContent = config.stars[Math.random() * config.stars.length | 0];
+
+        loaded = true;
+
+        check: for (lib in sound) {
+          for (sfx in sound[lib]) {
+            if (sound[lib][sfx].state() != "loaded") loaded = false;
+            break check;
+          }
+        }
+
+        if (loaded) {
+          _loading.classList.add("hidden");
+          clearInterval(loading);
+          init();
+        }
+      }, 100);
+    }
+
+    var _canvas = document.getElementById("main");
+    var _main = _canvas.getContext("2d");
+    var _bg = document.getElementById("bg").getContext("2d");
+    var _loop;
+    function init() {
+      Array.from(document.querySelectorAll("canvas")).forEach((el) => el.classList.remove("hidden"));
+
+      document.addEventListener("keydown", function(e) {
+        if (e.repeat) return
+
+        let k = e.keyCode;
+
+        chars.player.keyHandler[k] = e.type == 'keydown';
+        chars.player.history.unshift(k);
+        clearInterval(_loop);
+        playerUpdate();
+        _loop = setInterval(playerUpdate, config.updateSpeed);
+
+        console.log(chars.player.history)
+      });
+      document.addEventListener("keyup", function(e) {
+        let k = e.keyCode;
+
+        chars.player.keyHandler[k] = e.type == 'keydown';
+
+        if (k == chars.player.history[0]) {
+          chars.player.history.shift();
+        }
+      })
+
+      generateMap();
+      draw();
+      setInterval(update, config.updateSpeed);
+    }
+
+    function draw() {
+      _main.clearRect(0, 0, cX*cs, cY*cs);
+
+      let vy = 0;
+      let vmax = config.viewport;
+
+      // camera
+
+      let halfvmax = Math.floor(vmax / 2);
+      if (chars.player.pos.y >= halfvmax) {
+        if (chars.player.pos.y >= cY - halfvmax) {
+          vy = cY - config.viewport;
+        } else {
+          vy = chars.player.pos.y - halfvmax;
+        }
+      }
+
+      let i=0;
+      for (let y=vy; y<=vy+config.viewport; y++) {
+        for (let x in smap[y]) {
+          _bg.globalCompositeOperation = "source-over";
+          if (cmap[y][x] == 1) {
+            _bg.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+          } else {
+            _bg.fillStyle = "white";
+          }
+          _bg.fillRect(x*cs, i*cs, cs, cs);
+
+          // 블렌딩모드
+          _bg.globalCompositeOperation = "hue";
+          _bg.fillStyle = "gray";
+          _bg.fillRect(x*cs, i*cs, cs, cs);
+
+          // ch
+          if (smap[y][x] == "P") {
+            _main.fillStyle = "blue";
+            _main.fillRect(x*cs, i*cs, cs, cs);
+          }
+        }
+        i++;
+      }
+
+      window.requestAnimationFrame(draw);
+    }
+
+    function update() {
+      let p = chars.player;
+      if (!cmap[p.pos.y+1][p.pos.x]) {
+        smap[p.pos.y][p.pos.x] = null;
+        p.pos.y += 1;
+        smap[p.pos.y][p.pos.x] = "P";
+      }
+    }
+
+    function playerUpdate() {
+      let p = chars.player;
+      for (let i in p.keyHandler) {
+        if (p.keyHandler[i]) {
+          let map = p.keyMap;
+          smap[p.pos.y][p.pos.x] = null;
+          var sfx = sound[0][Math.random() * sound[0].length | 0];
+          let volume = Math.floor(Math.random() * 3);
+          switch (volume) {
+            case 0:
+              sfx.volume(0.6);
+              break;
+            case 1:
+              sfx.volume(0.8);
+              break;
+            case 2:
+              sfx.volume(1);
+              break;
+          }
+
+          switch (""+i) {
+            case map.left:
+              if (p.history[0] != map.right) {
+                if (!cmap[p.pos.y][p.pos.x - 1] || !cmap[p.pos.y - 1][p.pos.x - 1]) {
+                  p.pos.x -= 1;
+                  sfx.play();
+
+                  if (cmap[p.pos.y][p.pos.x - 1] && !cmap[p.pos.y - 1][p.pos.x - 1]) {
+                    p.pos.y -= 1;
+                  }
+                }
+              }
+              break;
+            case map.right:
+              if (p.history[0] != map.left) {
+                if (!cmap[p.pos.y][p.pos.x + 1] || !cmap[p.pos.y - 1][p.pos.x + 1]) {
+                  p.pos.x += 1;
+                  sfx.play();
+
+                  if (cmap[p.pos.y][p.pos.x + 1] && !cmap[p.pos.y - 1][p.pos.x + 1]) {
+                    p.pos.y -= 1;
+                  }
+                }
+              }
+              break;
+          }
+
+          if (p.pos.x >= smap[p.pos.y].length) {
+            p.pos.x = 0;
+          } else if (p.pos.x <= 0) {
+            p.pos.x = smap[p.pos.y].length - 1
+          }
+
+          smap[p.pos.y][p.pos.x] = "P";
+
+          // while (!cmap[p.pos.y+1][p.pos.x]) {
+          //   p.pos.y += 1;
+          // }
+        }
+      }
+    }
+
+    // 맵 생성
+    var map = [];
+    var spawn;
+    var cmap = [];
+    var smap = [];
+    var cs;
+    var cX, cY;
+    var chars = {
+      player: {
+        pos: { x: undefined, y: undefined },
+        keyHandler: {},
+        keyMap: {
+          left: "37",
+          right: "39"
+        },
+        history: [],
+      }
+    };
+    function generateMap() {
+      cX = tiles.drops[0][0].length * config.tilesX;
+      cY = tiles.drops[0].length * config.tilesY;
+      for (let y=0; y<config.tilesY; y++) {
+        map[y] = [];
+      }
+
+      for (let y=0; y<config.tilesY; y++) {
+        // place drop
+        if (y !== config.tilesY - 1) {
+          let drop = tiles.drops[Math.random() * tiles.drops.length | 0];
+          var random = (Math.random() * config.tilesX) | 0;
+          while (map[y][random]) {
+            random = (Math.random() * config.tilesX) | 0;
+          }
+          map[y][random] = [...drop];
+
+          if (y == 0) {
+            spawn = (Math.random() * config.tilesX) | 0;
+            while (spawn == random) {
+              spawn = (Math.random() * config.tilesX) | 0;
+            }
+          }
+        }
+
+        if (map[y+1]) {
+          let landing = tiles.landings[Math.random() * tiles.landings.length | 0];
+          map[y+1][random] = [...landing];
+        }
+
+        for (let x=0; x<config.tilesX; x++) {
+          if (!map[y][x]) {
+            let room = tiles.rooms[Math.random() * tiles.rooms.length | 0];
+            map[y][x] = [...room];
+          }
+        }
+
+        for (let i=0; i<tiles.drops[0].length; i++) {
+          let rownum = (y * tiles.drops[0].length) + i;
+          let array = [];
+
+          for (let x=0; x<config.tilesX; x++) {
+            array = array.concat(map[y][x][i]);
+          }
+
+          cmap[rownum] = [...array];
+        }
+      }
+
+      for (let y in cmap) {
+        smap[y] = [];
+        for (let x in cmap[y]) {
+          smap[y][x] = [];
+        }
+      }
+
+      cs = Math.floor(_canvas.width / cX);
+
+      _bg.beginPath();
+      for (let y=0; y<=config.viewport; y++) {
+        for (let x in cmap[y]) {
+          _bg.globalCompositeOperation = "source-over";
+          if (cmap[y][x] == 1) {
+            _bg.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+          } else {
+            _bg.fillStyle = "white";
+          }
+          _bg.fillRect(x*cs, y*cs, cs, cs);
+
+          // 블렌딩모드
+          _bg.globalCompositeOperation = "hue";
+          _bg.fillStyle = "gray";
+          _bg.fillRect(x*cs, y*cs, cs, cs);
+        }
+      }
+
+      chars.player.pos.y = tiles.drops[0].length - 2;
+      chars.player.pos.x = (spawn*tiles.drops[0][0].length) + Math.floor(tiles.drops[0][0].length / 2);
+      smap[chars.player.pos.y][chars.player.pos.x] = "P";
+    }
+  </script>
+</html>

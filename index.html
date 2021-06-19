@@ -89,7 +89,7 @@
         font-size: 1em;
         text-decoration: none;
         color: var(--star);
-        /* padding: 1em; */
+        padding: 1em;
         margin-left: 0.5em;
         margin-right: 0.5em;
         margin-bottom: 1em;
@@ -107,11 +107,12 @@
 
       a#intro {
         border: none;
+        padding: 0;
       }
 
       a img {
-        width: 5em;
-        height: 5em;
+        width: 3em;
+        height: 3em;
       }
 
       hr {
@@ -180,6 +181,13 @@
 
   <script src="sound/howler.core.js"></script>
   <script type="text/javascript">
+    var config = {
+      speed: 10,
+      stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
+      lifespan: 4 * window.innerWidth,
+      consistency: 1000,
+    };
+
     var sound = [
       [
         new Howl({src: "sound/0_0.wav"}),
@@ -260,13 +268,6 @@
     }
 
     var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    var config = {
-      speed: 10,
-      stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      lifespan: 4 * window.innerWidth,
-      consistency: 1000,
-    };
     var timer = 0;
 
     function update() {
@@ -293,8 +294,8 @@
 
         star.onclick = function(e) {
           e.stopPropagation();
-          drawLine(star);
           star.classList.add("selected");
+          drawLine(star);
         };
 
         setTimeout(function() {
