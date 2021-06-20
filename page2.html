@@ -17,7 +17,7 @@
 
       canvas {
         position: absolute;
-        transform: translate(-50%, -50%) scale(20);
+        transform: translate(-50%, -50%) scale(10);
         left: 50%;
         top: 50%;
         image-rendering: optimizeSpeed;
@@ -262,7 +262,7 @@
 
       generateMap();
       draw();
-      setInterval(physicsUpdate, config.gravity);
+      setInterval(update, config.gravity);
     }
 
     function draw() {
@@ -320,7 +320,12 @@
       window.requestAnimationFrame(draw);
     }
 
-    function physicsUpdate() {
+    var timer = 0;
+    function update() {
+      timer++;
+
+      //physics
+
       let p = chars.player;
       if (cmap[p.pos.y+1][p.pos.x] == 0) {
         smap[p.pos.y][p.pos.x] = null;
@@ -337,6 +342,10 @@
         p.velocity++;
       } else {
         p.velocity = 1;
+      }
+
+      if (timer % 2 == 0) {
+
       }
     }
 
