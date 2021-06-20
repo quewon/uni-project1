@@ -39,16 +39,16 @@
       canvas {
         width: 400px;
         height: 400px;
-        image-rendering: optimizeSpeed;
-        image-rendering: -moz-crisp-edges;
-        image-rendering: -webkit-optimize-contrast;
-        image-rendering: -o-crisp-edges;
-        image-rendering: crisp-edges;
-        -ms-interpolation-mode: nearest-neighbor;
+        image-rendering: optimizeSpeed;             /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: -webkit-optimize-contrast; /* Safari                        */
+        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated;                 /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor;   /* IE     */
       }
 
       .hidden {
-        opacity: 0;
+        opacity: 0 !important;
         transition: 0.5s;
       }
 
@@ -100,7 +100,7 @@
       tilesX: 4,
       tilesY: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      updateSpeed: 150,
+      updateSpeed: 100,
       gravity: 50,
 
       minArtSize: 5,
@@ -282,8 +282,11 @@
     var _ui = _uic.getContext("2d");
     var _loop;
     function init() {
+      document.getElementById("tutorial").classList.remove("hidden");
+
       cX = tiles.drops[0][0].length * config.tilesX;
       cY = tiles.drops[0].length * config.tilesY;
+      config.halfcX = Math.floor(cX/2);
 
       let canvases = document.querySelectorAll("canvas");
       for (canvas in canvases) {
@@ -336,60 +339,41 @@
       setInterval(update, config.gravity);
     }
 
-    function draw() {
-      let vmax = config.viewport;
-      _main.clearRect(0, 0, cX, vmax);
+    function drawScene(vx, vy, vmax) {
       _bg.clearRect(0, 0, cX, vmax);
-      _ui.clearRect(0, 0, cX, vmax);
-
-      tooltip("");
-
-      let vy = 0;
-      let vx = chars.player.pos.x - Math.floor(cX/2);
-
-      // camera
-
-      let halfvmax = Math.floor(vmax / 2);
-      if (chars.player.pos.y >= halfvmax) {
-        if (chars.player.pos.y >= cY - halfvmax) {
-          vy = cY - config.viewport;
-        } else {
-          vy = chars.player.pos.y - halfvmax;
-        }
-      }
-
-      //vx: coords of player relative to center
+      _main.clearRect(0, 0, cX, vmax);
 
       if (vx >= 0) {
         let i=0;
-        for (let y=vy; y<vy+config.viewport; y++) {
+        for (let y=vy; y<vy+vmax; y++) {
           for (let x=vx; x<cX; x++) {
+            let nx = x-vx;
             _bg.globalCompositeOperation = "source-over";
             if (cmap[y][x] != 0) {
               _bg.fillStyle = cmap[y][x];
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "exclusion";
               _bg.fillStyle = "#172445";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
               _bg.fillStyle = "#faecd4";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "multiply";
               _bg.fillStyle = "#faecd4";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
             }
 
             // ch
 
             if (smap[y][x].includes("B")) {
-              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
-              _main.fillRect(x-vx, i, 1, 1);
+              _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(nx, i, 1, 1);
 
               // _main.globalCompositeOperation = "exclusion";
               // _main.fillStyle = "#172445";
@@ -399,7 +383,7 @@
           i++;
         }
         i=0;
-        for (let y=vy; y<vy+config.viewport; y++) {
+        for (let y=vy; y<vy+vmax; y++) {
           for (let x=0; x<=vx; x++) {
             let nx = cX-vx+x;
             _bg.globalCompositeOperation = "source-over";
@@ -426,7 +410,7 @@
             // ch
 
             if (smap[y][x].includes("B")) {
-              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
               // _main.globalCompositeOperation = "exclusion";
@@ -438,34 +422,35 @@
         }
       } else {
         let i=0;
-        for (let y=vy; y<vy+config.viewport; y++) {
+        for (let y=vy; y<vy+vmax; y++) {
           for (let x=0; x<cX+vx; x++) {
             _bg.globalCompositeOperation = "source-over";
+            let nx = x-vx;
             if (cmap[y][x] != 0) {
               _bg.fillStyle = cmap[y][x];
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "exclusion";
               _bg.fillStyle = "#172445";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
               _bg.fillStyle = "#faecd4";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "multiply";
               _bg.fillStyle = "#faecd4";
-              _bg.fillRect(x-vx, i, 1, 1);
+              _bg.fillRect(nx, i, 1, 1);
             }
 
             // ch
 
             if (smap[y][x].includes("B")) {
-              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
-              _main.fillRect(x-vx, i, 1, 1);
+              _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(nx, i, 1, 1);
 
               // _main.globalCompositeOperation = "exclusion";
               // _main.fillStyle = "#172445";
@@ -475,9 +460,9 @@
           i++;
         }
         i=0;
-        for (let y=vy; y<vy+config.viewport; y++) {
+        for (let y=vy; y<vy+vmax; y++) {
           let ii=0;
-          for (let x=cX-Math.abs(vx); x<cX; x++) {
+          for (let x=cX+vx; x<cX; x++) {
             let nx = ii;
             _bg.globalCompositeOperation = "source-over";
             if (cmap[y][x] != 0) {
@@ -503,7 +488,7 @@
             // ch
 
             if (smap[y][x].includes("B")) {
-              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
               // _main.globalCompositeOperation = "exclusion";
@@ -519,6 +504,27 @@
       _main.globalCompositeOperation = "source-over";
       _main.fillStyle = "#172445";
       _main.fillRect(chars.player.pos.x - vx, chars.player.pos.y - vy, 1, 1);
+    }
+
+    function draw() {
+      let vmax = config.viewport;
+      let vy = 0;
+      let vx = chars.player.pos.x - config.halfcX;
+
+      let halfvmax = config.halfVP;
+      if (chars.player.pos.y >= halfvmax) {
+        if (chars.player.pos.y >= cY - halfvmax) {
+          vy = cY - vmax;
+        } else {
+          vy = chars.player.pos.y - halfvmax;
+        }
+      }
+
+      drawScene(vx, vy, vmax);
+
+      tooltip("");
+
+      _ui.clearRect(0, 0, cX, vmax);
 
       if (smap[chars.player.pos.y - 1][chars.player.pos.x].includes("B")) {
         _ui.globalCompositeOperation = "source-over";
@@ -554,7 +560,7 @@
         tooltip(b.comment);
       }
 
-      window.requestAnimationFrame(draw);
+      // requestAnimationFrame(draw);
     }
 
     var timer = 0;
@@ -573,6 +579,10 @@
         p.velocity++;
       } else {
         p.velocity = 1;
+      }
+
+      if (timer % 2 == 0) {
+        draw();
       }
     }
 
@@ -607,9 +617,6 @@
                   }
                 }
               }
-              if (document.getElementById("tutorial")) {
-                document.getElementById("tutorial").remove();
-              }
               break;
             case map.right:
               if (p.history[0] != map.left) {
@@ -622,16 +629,20 @@
                   }
                 }
               }
-              if (document.getElementById("tutorial")) {
-                document.getElementById("tutorial").remove();
-              }
               break;
           }
 
-          if (p.pos.x >= smap[p.pos.y].length) {
-            p.pos.x = 0;
-          } else if (p.pos.x < 0) {
-            p.pos.x = smap[p.pos.y].length - 1
+          if (""+i == map.left || ""+i == map.right) {
+            if (document.getElementById("tutorial")) {
+              document.getElementById("tutorial").remove();
+            }
+            if (p.pos.x >= cX) {
+              p.pos.x = 0;
+            } else if (p.pos.x < 0) {
+              p.pos.x = cX - 1
+            }
+
+            // draw();
           }
         }
       }
@@ -723,12 +734,13 @@
         for (let x in cmap[y]) {
           smap[y][x] = [];
           if (cmap[y][x] == 1) {
-            cmap[y][x] = Math.floor(Math.random()*16777215).toString(16);
+            cmap[y][x] = "#"+Math.floor(Math.random()*16777215).toString(16);
           }
         }
       }
 
       config.viewport = Math.floor(document.getElementById("main").height);
+      config.halfVP = Math.floor(config.viewport / 2);
       config.cs = Math.floor(parseInt(getComputedStyle(_uic).width) / cX);
       if (config.viewport > cmap.length) config.viewport = cmap.length - 1;
 
@@ -747,7 +759,7 @@
           chars["B"+by+x] = {
             name: "B"+by+x,
             artwork: generateArt(),
-            filter: Math.floor(Math.random()*16777215).toString(16),
+            filter: "#"+Math.floor(Math.random()*16777215).toString(16),
           };
           generateComment(chars["B"+by+x]);
         }
@@ -762,7 +774,7 @@
       for (let y=0; y<ysize; y++) {
         array[y] = [];
         for (let x=0; x<xsize; x++) {
-          array[y][x] = Math.floor(Math.random()*16777215).toString(16);
+          array[y][x] = "#"+Math.floor(Math.random()*16777215).toString(16);
         }
       }
 
