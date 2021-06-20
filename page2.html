@@ -12,14 +12,16 @@
       }
 
       body {
-        background-color: var(--bg);
+        background-color: var(--star);
       }
 
       canvas {
         position: absolute;
-        transform: translate(-50%, -50%) scale(10);
+        transform: translate(-50%, -50%);
         left: 50%;
         top: 50%;
+        width: 400px;
+        height: 400px;
         image-rendering: optimizeSpeed;
         image-rendering: -moz-crisp-edges;
         image-rendering: -webkit-optimize-contrast;
@@ -40,15 +42,19 @@
     </div>
     <canvas class="hidden" id="bg"></canvas>
     <canvas class="hidden" id="main"></canvas>
+    <canvas id="ui"></canvas>
   </body>
   <script src="sound/howler.core.js"></script>
   <script type="text/javascript">
     var config = {
-      tilesX: 3,
+      tilesX: 4,
       tilesY: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
       updateSpeed: 150,
       gravity: 50,
+
+      minArtSize: 5,
+      maxArtSize: 15,
     };
 
     var tiles = {
@@ -171,7 +177,6 @@
         new Howl({src: "sound/0_7.wav"}),
         new Howl({src: "sound/0_8.wav"}),
         new Howl({src: "sound/0_9.wav"}),
-        new Howl({src: "sound/0_10.wav"}),
       ],
       [
         new Howl({src: "sound/1_0.wav"}),
@@ -184,7 +189,6 @@
         new Howl({src: "sound/1_7.wav"}),
         new Howl({src: "sound/1_8.wav"}),
         new Howl({src: "sound/1_9.wav"}),
-        new Howl({src: "sound/1_10.wav"}),
       ],
       [
         new Howl({src: "sound/2_0.wav"}),
@@ -197,7 +201,6 @@
         new Howl({src: "sound/2_7.wav"}),
         new Howl({src: "sound/2_8.wav"}),
         new Howl({src: "sound/2_9.wav"}),
-        new Howl({src: "sound/2_10.wav"}),
       ]
     ];
 
@@ -226,6 +229,7 @@
     var _canvas = document.getElementById("main");
     var _main = _canvas.getContext("2d");
     var _bg = document.getElementById("bg").getContext("2d");
+    var _ui = document.getElementById("ui").getContext("2d");
     var _loop;
     function init() {
       cX = tiles.drops[0][0].length * config.tilesX;
@@ -266,11 +270,13 @@
     }
 
     function draw() {
-      _main.clearRect(0, 0, cX, cY);
-      _bg.clearRect(0, 0, cX, cY);
+      let vmax = config.viewport;
+      _main.clearRect(0, 0, cX, vmax);
+      _bg.clearRect(0, 0, cX, vmax);
+      _ui.clearRect(0, 0, cX, vmax);
 
       let vy = 0;
-      let vmax = config.viewport;
+      let vx = chars.player.pos.x - Math.floor(cX/2);
 
       // camera
 
@@ -283,38 +289,194 @@
         }
       }
 
-      let i=0;
-      for (let y=vy; y<=vy+config.viewport; y++) {
-        for (let x in smap[y]) {
-          _bg.globalCompositeOperation = "source-over";
-          if (cmap[y][x] != 0) {
-            _bg.fillStyle = cmap[y][x];
-            // _bg.fillStyle = "white";
-            _bg.fillRect(x, i, 1, 1);
+      //vx: coords of player relative to center
 
-            // 블렌딩모드
-            _bg.globalCompositeOperation = "exclusion";
-            _bg.fillStyle = "#172445";
-            _bg.fillRect(x, i, 1, 1);
+      if (vx >= 0) {
+        let i=0;
+        for (let y=vy; y<vy+config.viewport; y++) {
+          for (let x=vx; x<cX; x++) {
+            _bg.globalCompositeOperation = "source-over";
+            // console.log(cmap[y][x])
+            if (cmap[y][x] != 0) {
+              _bg.fillStyle = cmap[y][x];
+              _bg.fillRect(x-vx, i, 1, 1);
 
-            // 블렌딩모드
-            _bg.globalCompositeOperation = "hue";
-            _bg.fillStyle = "#6c9bb8";
-            _bg.fillRect(x, i, 1, 1);
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "exclusion";
+              _bg.fillStyle = "#172445";
+              _bg.fillRect(x-vx, i, 1, 1);
 
-            // 블렌딩모드
-            _bg.globalCompositeOperation = "multiply";
-            _bg.fillStyle = "#6c9bb8";
-            _bg.fillRect(x, i, 1, 1);
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "hard-light";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(x-vx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "multiply";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(x-vx, i, 1, 1);
+            }
+
+            // ch
+
+            if (smap[y][x].includes("B")) {
+              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(x-vx, i, 1, 1);
+
+              // _main.globalCompositeOperation = "exclusion";
+              // _main.fillStyle = "#172445";
+              // _main.fillRect(x, i, 1, 1);
+            }
           }
+          i++;
+        }
+        i=0;
+        for (let y=vy; y<vy+config.viewport; y++) {
+          for (let x=0; x<=vx; x++) {
+            let nx = cX-vx+x;
+            _bg.globalCompositeOperation = "source-over";
+            if (cmap[y][x] != 0) {
+              _bg.fillStyle = cmap[y][x];
+              _bg.fillRect(nx, i, 1, 1);
 
-          // ch
-          if (smap[y][x] == "P") {
-            _main.fillStyle = "#faecd4";
-            _main.fillRect(x, i, 1, 1);
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "exclusion";
+              _bg.fillStyle = "#172445";
+              _bg.fillRect(nx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "hard-light";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(nx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "multiply";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(nx, i, 1, 1);
+            }
+
+            // ch
+
+            if (smap[y][x].includes("B")) {
+              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(nx, i, 1, 1);
+
+              // _main.globalCompositeOperation = "exclusion";
+              // _main.fillStyle = "#172445";
+              // _main.fillRect(x, i, 1, 1);
+            }
+          }
+          i++;
+        }
+      } else {
+        let i=0;
+        for (let y=vy; y<vy+config.viewport; y++) {
+          for (let x=0; x<cX+vx; x++) {
+            _bg.globalCompositeOperation = "source-over";
+            if (cmap[y][x] != 0) {
+              _bg.fillStyle = cmap[y][x];
+              _bg.fillRect(x-vx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "exclusion";
+              _bg.fillStyle = "#172445";
+              _bg.fillRect(x-vx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "hard-light";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(x-vx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "multiply";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(x-vx, i, 1, 1);
+            }
+
+            // ch
+
+            if (smap[y][x].includes("B")) {
+              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(x-vx, i, 1, 1);
+
+              // _main.globalCompositeOperation = "exclusion";
+              // _main.fillStyle = "#172445";
+              // _main.fillRect(x, i, 1, 1);
+            }
+          }
+          i++;
+        }
+        i=0;
+        for (let y=vy; y<vy+config.viewport; y++) {
+          let ii=0;
+          for (let x=cX-Math.abs(vx); x<cX; x++) {
+            let nx = ii;
+            _bg.globalCompositeOperation = "source-over";
+            if (cmap[y][x] != 0) {
+              _bg.fillStyle = cmap[y][x];
+              _bg.fillRect(nx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "exclusion";
+              _bg.fillStyle = "#172445";
+              _bg.fillRect(nx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "hard-light";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(nx, i, 1, 1);
+
+              // 블렌딩모드
+              _bg.globalCompositeOperation = "multiply";
+              _bg.fillStyle = "#faecd4";
+              _bg.fillRect(nx, i, 1, 1);
+            }
+
+            // ch
+
+            if (smap[y][x].includes("B")) {
+              _main.fillStyle = Math.floor(Math.random()*16777215).toString(16);
+              _main.fillRect(nx, i, 1, 1);
+
+              // _main.globalCompositeOperation = "exclusion";
+              // _main.fillStyle = "#172445";
+              // _main.fillRect(x, i, 1, 1);
+            }
+            ii++;
+          }
+          i++;
+        }
+      }
+
+      _main.globalCompositeOperation = "source-over";
+      _main.fillStyle = "#172445";
+      _main.fillRect(chars.player.pos.x - vx, chars.player.pos.y - vy, 1, 1);
+
+      if (smap[chars.player.pos.y - 1][chars.player.pos.x].includes("B")) {
+        _ui.globalCompositeOperation = "source-over";
+        let i = chars.player.pos.y-2;
+        let b = chars[smap[chars.player.pos.y-1][chars.player.pos.x]];
+
+        var dx = Math.round((cX - b.artwork[0].length) / 2);
+        var dy = Math.round((config.viewport - b.artwork.length) / 2);
+
+        // 프레임
+        _ui.fillStyle = "#172445";
+        _ui.fillRect(dx - 1, dy - 1, b.artwork[0].length + 2, b.artwork.length + 2);
+
+        for (y in b.artwork) {
+          for (x in b.artwork[y]) {
+            _ui.globalCompositeOperation = "source-over";
+            _ui.fillStyle = b.artwork[y][x];
+            let nx = parseInt(x)+dx;
+            let ny = parseInt(y)+dy;
+            _ui.fillRect(nx, ny, 1, 1);
+
+            _ui.globalCompositeOperation = "exclusion";
+            _ui.fillStyle = b.filter;
+            _ui.fillRect(nx, ny, 1, 1);
           }
         }
-        i++;
       }
 
       window.requestAnimationFrame(draw);
@@ -328,24 +490,14 @@
 
       let p = chars.player;
       if (cmap[p.pos.y+1][p.pos.x] == 0) {
-        smap[p.pos.y][p.pos.x] = null;
         for (let i=0; i<=p.velocity; i++) {
-          p.pos.y++;
-          if (p.pos.y > cmap.length - 1) {
-            p.pos.y--;
-          }
-          if (cmap[p.pos.y][p.pos.x] != 0) {
-            p.pos.y--;
+          if (cmap[p.pos.y+1][p.pos.x] == 0) {
+            p.pos.y++;
           }
         }
-        smap[p.pos.y][p.pos.x] = "P";
         p.velocity++;
       } else {
         p.velocity = 1;
-      }
-
-      if (timer % 2 == 0) {
-
       }
     }
 
@@ -354,7 +506,6 @@
       for (let i in p.keyHandler) {
         if (p.keyHandler[i]) {
           let map = p.keyMap;
-          smap[p.pos.y][p.pos.x] = null;
           var sfx = sound[0][Math.random() * sound[0].length | 0];
           let volume = Math.floor(Math.random() * 3);
           switch (volume) {
@@ -401,12 +552,6 @@
           } else if (p.pos.x < 0) {
             p.pos.x = smap[p.pos.y].length - 1
           }
-
-          smap[p.pos.y][p.pos.x] = "P";
-
-          // while (!cmap[p.pos.y+1][p.pos.x]) {
-          //   p.pos.y += 1;
-          // }
         }
       }
     }
@@ -430,6 +575,8 @@
       }
     };
     function generateMap() {
+      let botspawns = [];
+
       for (let y=0; y<config.tilesY; y++) {
         map[y] = [];
       }
@@ -457,11 +604,25 @@
           map[y+1][random] = [...landing];
         }
 
+        let potential_botspawns = [];
         for (let x=0; x<config.tilesX; x++) {
           if (!map[y][x]) {
             let room = tiles.rooms[Math.random() * tiles.rooms.length | 0];
             map[y][x] = [...room];
+
+            potential_botspawns.push(x);
           }
+        }
+
+        if (y == 0) potential_botspawns.splice(potential_botspawns.indexOf(spawn), 1);
+
+        let botsInFloor = Math.floor((Math.random() * potential_botspawns.length - 1) + 1);
+
+        botspawns[y] = [];
+        for (let i=0; i<=botsInFloor; i++) {
+          let rand = Math.random() * potential_botspawns.length | 0;
+          botspawns[y].push(potential_botspawns[rand]);
+          potential_botspawns.splice(potential_botspawns.indexOf(rand), 1);
         }
 
         for (let i=0; i<tiles.drops[0].length; i++) {
@@ -487,16 +648,48 @@
       }
 
       config.viewport = Math.floor(document.getElementById("main").height);
+      if (config.viewport > cmap.length) config.viewport = cmap.length - 1;
 
       // 플레이어 생성
 
       chars.player.pos.y = tiles.drops[0].length - 2;
       chars.player.pos.x = (spawn*tiles.drops[0][0].length) + Math.floor(tiles.drops[0][0].length / 2);
-      smap[chars.player.pos.y][chars.player.pos.x] = "P";
+
+      console.log(botspawns);
 
       // 로봇 생성
+      for (let y in map) {
+        for (let bot in botspawns[y]) {
+          let x = botspawns[y][bot]*tiles.drops[0][0].length + Math.floor(tiles.drops[0][0].length / 2);
+          let by = y*tiles.drops[0].length + tiles.drops[0][0].length - 3;
+          smap[by][x] = "B"+by+x;
 
+          chars["B"+by+x] = {
+            artwork: generateArt(),
+            comment: generateComment(),
+            filter: Math.floor(Math.random()*16777215).toString(16),
+          }
+        }
+      }
+    }
 
+    function generateArt() {
+      let array = [];
+
+      let ysize = (Math.random() * (config.maxArtSize - config.minArtSize)) + config.minArtSize;
+      let xsize = (Math.random() * (config.maxArtSize - config.minArtSize)) + config.minArtSize;
+      for (let y=0; y<ysize; y++) {
+        array[y] = [];
+        for (let x=0; x<xsize; x++) {
+          array[y][x] = Math.floor(Math.random()*16777215).toString(16);
+        }
+      }
+
+      return array
+    }
+
+    function generateComment() {
+      return "🤖"
     }
   </script>
 </html>
