@@ -17,9 +17,15 @@
 
       canvas {
         position: absolute;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) scale(20);
         left: 50%;
         top: 50%;
+        image-rendering: optimizeSpeed;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: -o-crisp-edges;
+        image-rendering: crisp-edges;
+        -ms-interpolation-mode: nearest-neighbor;
       }
 
       .hidden {
@@ -32,88 +38,124 @@
     <div id="loading">
       *
     </div>
-    <canvas class="hidden" id="bg" width="300" height="300"></canvas>
-    <canvas class="hidden" id="main" width="300" height="300"></canvas>
+    <canvas class="hidden" id="bg"></canvas>
+    <canvas class="hidden" id="main"></canvas>
   </body>
   <script src="sound/howler.core.js"></script>
   <script type="text/javascript">
     var config = {
-      tilesX: 4,
-      tilesY: 13,
-      viewport: 20,
+      tilesX: 3,
+      tilesY: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
       updateSpeed: 150,
+      gravity: 50,
     };
 
     var tiles = {
       drops: [
         [
-          [1, 1, 1, 1, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 0, 0, 0, 1]
+          [1, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 0, 0, 0, 0, 0, 1]
         ],
         [
-          [1, 1, 1, 1, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0]
+          [1, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0]
         ]
       ],
       landings: [
         [
-          [1, 0, 0, 0, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [1, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ],
         [
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ]
       ],
       rooms: [
         [
-          [1, 1, 1, 1, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [1, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ],
         [
-          [1, 1, 1, 1, 1],
-          [1, 0, 0, 0, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ],
         [
-          [1, 1, 1, 1, 1],
-          [0, 0, 0, 0, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [1, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ],
         [
-          [1, 1, 1, 1, 1],
-          [1, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
+          [1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
         ],
         [
-          [1, 1, 1, 1, 1],
-          [1, 1, 1, 1, 1],
-          [0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0],
-          [1, 1, 1, 1, 1]
-        ]
+          [1, 1, 1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
+        ],
+        [
+          [1, 0, 0, 0, 0, 0, 1],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
+        ],
+        [
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 1, 1]
+        ],
       ]
     };
 
@@ -186,6 +228,15 @@
     var _bg = document.getElementById("bg").getContext("2d");
     var _loop;
     function init() {
+      cX = tiles.drops[0][0].length * config.tilesX;
+      cY = tiles.drops[0].length * config.tilesY;
+
+      let canvases = document.querySelectorAll("canvas");
+      for (canvas in canvases) {
+        canvases[canvas].width = cX;
+        canvases[canvas].height = cX;
+      }
+
       Array.from(document.querySelectorAll("canvas")).forEach((el) => el.classList.remove("hidden"));
 
       document.addEventListener("keydown", function(e) {
@@ -211,12 +262,12 @@
 
       generateMap();
       draw();
-      setInterval(update, config.updateSpeed);
+      setInterval(physicsUpdate, config.gravity);
     }
 
     function draw() {
-      _main.clearRect(0, 0, cX*cs, cY*cs);
-      _bg.clearRect(0, 0, cX*cs, cY*cs);
+      _main.clearRect(0, 0, cX, cY);
+      _bg.clearRect(0, 0, cX, cY);
 
       let vy = 0;
       let vmax = config.viewport;
@@ -236,25 +287,31 @@
       for (let y=vy; y<=vy+config.viewport; y++) {
         for (let x in smap[y]) {
           _bg.globalCompositeOperation = "source-over";
-          if (cmap[y][x] == 1) {
-            _bg.fillStyle = Math.floor(Math.random()*16777215).toString(16);
-          } else {
-            _bg.fillStyle = "transparent";
-          }
-          _bg.fillRect(x*cs, i*cs, cs, cs);
+          if (cmap[y][x] != 0) {
+            _bg.fillStyle = cmap[y][x];
+            // _bg.fillStyle = "white";
+            _bg.fillRect(x, i, 1, 1);
 
-          // 블렌딩모드
-          _bg.globalCompositeOperation = "color";
-          _bg.fillStyle = "#172445";
-          _bg.fillRect(x*cs, i*cs, cs, cs);
-          // _bg.globalCompositeOperation = "color-burn"; //디스코
-          // _bg.fillStyle = "#172445";
-          // _bg.fillRect(x*cs, i*cs, cs, cs);
+            // 블렌딩모드
+            _bg.globalCompositeOperation = "exclusion";
+            _bg.fillStyle = "#172445";
+            _bg.fillRect(x, i, 1, 1);
+
+            // 블렌딩모드
+            _bg.globalCompositeOperation = "hue";
+            _bg.fillStyle = "#6c9bb8";
+            _bg.fillRect(x, i, 1, 1);
+
+            // 블렌딩모드
+            _bg.globalCompositeOperation = "multiply";
+            _bg.fillStyle = "#6c9bb8";
+            _bg.fillRect(x, i, 1, 1);
+          }
 
           // ch
           if (smap[y][x] == "P") {
             _main.fillStyle = "#faecd4";
-            _main.fillRect(x*cs, i*cs, cs, cs);
+            _main.fillRect(x, i, 1, 1);
           }
         }
         i++;
@@ -263,12 +320,23 @@
       window.requestAnimationFrame(draw);
     }
 
-    function update() {
+    function physicsUpdate() {
       let p = chars.player;
-      if (!cmap[p.pos.y+1][p.pos.x]) {
+      if (cmap[p.pos.y+1][p.pos.x] == 0) {
         smap[p.pos.y][p.pos.x] = null;
-        p.pos.y += 1;
+        for (let i=0; i<=p.velocity; i++) {
+          p.pos.y++;
+          if (p.pos.y > cmap.length - 1) {
+            p.pos.y--;
+          }
+          if (cmap[p.pos.y][p.pos.x] != 0) {
+            p.pos.y--;
+          }
+        }
         smap[p.pos.y][p.pos.x] = "P";
+        p.velocity++;
+      } else {
+        p.velocity = 1;
       }
     }
 
@@ -339,7 +407,6 @@
     var spawn;
     var cmap = [];
     var smap = [];
-    var cs;
     var cX, cY;
     var chars = {
       player: {
@@ -350,11 +417,10 @@
           right: "39"
         },
         history: [],
+        velocity: 0,
       }
     };
     function generateMap() {
-      cX = tiles.drops[0][0].length * config.tilesX;
-      cY = tiles.drops[0].length * config.tilesY;
       for (let y=0; y<config.tilesY; y++) {
         map[y] = [];
       }
@@ -405,14 +471,23 @@
         smap[y] = [];
         for (let x in cmap[y]) {
           smap[y][x] = [];
+          if (cmap[y][x] == 1) {
+            cmap[y][x] = Math.floor(Math.random()*16777215).toString(16);
+          }
         }
       }
 
-      cs = Math.floor(_canvas.width / cX);
+      config.viewport = Math.floor(document.getElementById("main").height);
+
+      // 플레이어 생성
 
       chars.player.pos.y = tiles.drops[0].length - 2;
       chars.player.pos.x = (spawn*tiles.drops[0][0].length) + Math.floor(tiles.drops[0][0].length / 2);
       smap[chars.player.pos.y][chars.player.pos.x] = "P";
+
+      // 로봇 생성
+
+
     }
   </script>
 </html>
