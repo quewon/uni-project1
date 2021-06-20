@@ -2,20 +2,8 @@
 <html lang="ko" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>로봇 박물관</title>
+    <title>로봇 미술관</title>
     <style>
-      @media only screen and (max-width: 400px) {
-        canvas {
-          width: 90vw;
-          height: 90vw;
-        }
-      }
-      @media only screen and (max-height: 400px) {
-        canvas {
-          width: 90vh;
-          height: 90vh;
-        }
-      }
 
       html {
         font-family: 'Nanum Gothic Coding', monospace;
@@ -45,6 +33,22 @@
         image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
         image-rendering: pixelated;                 /* Awesome future-browsers       */
         -ms-interpolation-mode: nearest-neighbor;   /* IE     */
+      }
+
+      @media only screen and (max-width: 400px) {
+        canvas {
+          width: 90vw;
+          height: 90vw;
+        }
+      }
+      @media only screen and (max-height: 400px) {
+        canvas {
+          width: 90vh;
+          height: 90vh;
+        }
+        #tt_wrapper {
+          transform: translate(-50%, -50%) scale(0.75);
+        }
       }
 
       .hidden {
@@ -86,8 +90,8 @@
     <canvas class="hidden centered" id="bg"></canvas>
     <canvas class="hidden centered" id="main"></canvas>
     <div id="tutorial" class="hidden centered">
-      <i>[← →] 방향키로 검은 점을 움직여<br>
-      박물관을 탐험해 보세요</i>
+      <i>[← →] 방향키로 검정색 점을 움직여<br>
+      미술관을 탐험해 보세요</i>
     </div>
     <div id="tt_wrapper" class="hidden centered">
       <canvas id="ui"></canvas><br>
@@ -100,7 +104,7 @@
       tilesX: 4,
       tilesY: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      updateSpeed: 100,
+      updateSpeed: 125,
       gravity: 50,
 
       minArtSize: 5,
@@ -319,20 +323,20 @@
         }
       });
 
-      // config.language = window.navigator.userLanguage || window.navigator.language;
-      // config.language = "ko";
-      // if (config.language.includes("en")) {
-      //   config.words = {
-      //     articles: ["a(n)", "the", "one", "to the", "to a(n)", "for a(n)", "for the", "atop the", "atop a(n)", "on a(n)", "on the", "some", "another"],
-      //     adjs: ["happy", "free", "seaside", "night-sky", "city", "peace", "peaceful", "somber", "sober", "dreaming", "machine", "dream", "clockwork", "digital", "analog", "goldberg"],
-      //     nouns: ["soul", "sea", "moment", "era", "giant", "automata", "android", "machine", "algorithm", "god", "goddess", "war"],
-      //   };
-      // } else {
+      config.language = window.navigator.userLanguage || window.navigator.language;
+      config.language = "ko";
+      if (config.language.includes("en")) {
         config.words = {
-          adjs: ["행복의", "행복한", "자유의", "자유로운", "해변가에", "밤하늘에", "도시의", "평화의", "평화로운", "우울의", "우울한", "꿈의", "꿈꾸는", "시계태엽", "기계의", "디지털", "아날로그", "골드버그", "영원한", "눈 내리는", "가을", "봄", "여름", "겨울"],
-          nouns: ["마음", "바다", "순간", "시대", "거인", "오토마타", "안드로이드", "장치", "알고리즘", "신", "여신", "전쟁", "정원", "시스템", "사막", "새벽", "약속", "소원"],
+          articles: ["a(n)", "a(n)", "a(n)", "the", "the", "the", "one", "to the", "to a(n)", "for a(n)", "for the", "on a(n)", "on the", "some", "another", "of a(n)", "of the"],
+          adjs: ["happy", "free", "seaside", "urban", "peaceful", "somber", "sober", "dreaming", "machine", "dreamer's", "clockwork", "digital", "analog", "goldbergian", "modern"],
+          nouns: ["soul", "sea", "moment", "era", "giant", "automaton", "android", "machine", "algorithm", "god", "goddess", "war", "child", "promise", "hope"],
         };
-      // };
+      } else {
+        config.words = {
+          adjs: ["행복의", "행복한", "자유의", "자유로운", "해변가에", "밤하늘에", "도시의", "평화의", "평화로운", "우울의", "우울한", "꿈속", "꿈꾸는", "시계태엽", "기계의", "디지털", "아날로그", "골드버그의", "영원한", "눈 내리는", "가을", "봄", "여름", "겨울", "모던"],
+          nouns: ["마음", "바다", "순간", "시대", "거인", "오토마타", "안드로이드", "장치", "알고리즘", "신", "여신", "전쟁", "정원", "시스템", "사막", "새벽", "약속", "소원", "아이"],
+        };
+      };
 
       generateMap();
       draw();
@@ -372,12 +376,13 @@
             // ch
 
             if (smap[y][x].includes("B")) {
+              _main.globalCompositeOperation = "source-over";
               _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
-              // _main.globalCompositeOperation = "exclusion";
-              // _main.fillStyle = "#172445";
-              // _main.fillRect(x, i, 1, 1);
+              _main.globalCompositeOperation = "exclusion";
+              _main.fillStyle = chars[smap[y][x]].filter;
+              _main.fillRect(nx, i, 1, 1);
             }
           }
           i++;
@@ -410,12 +415,13 @@
             // ch
 
             if (smap[y][x].includes("B")) {
+              _main.globalCompositeOperation = "source-over";
               _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
-              // _main.globalCompositeOperation = "exclusion";
-              // _main.fillStyle = "#172445";
-              // _main.fillRect(x, i, 1, 1);
+              _main.globalCompositeOperation = "exclusion";
+              _main.fillStyle = chars[smap[y][x]].filter;
+              _main.fillRect(nx, i, 1, 1);
             }
           }
           i++;
@@ -449,12 +455,13 @@
             // ch
 
             if (smap[y][x].includes("B")) {
+              _main.globalCompositeOperation = "source-over";
               _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
-              // _main.globalCompositeOperation = "exclusion";
-              // _main.fillStyle = "#172445";
-              // _main.fillRect(x, i, 1, 1);
+              _main.globalCompositeOperation = "exclusion";
+              _main.fillStyle = chars[smap[y][x]].filter;
+              _main.fillRect(nx, i, 1, 1);
             }
           }
           i++;
@@ -488,12 +495,13 @@
             // ch
 
             if (smap[y][x].includes("B")) {
+              _main.globalCompositeOperation = "source-over";
               _main.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
               _main.fillRect(nx, i, 1, 1);
 
-              // _main.globalCompositeOperation = "exclusion";
-              // _main.fillStyle = "#172445";
-              // _main.fillRect(x, i, 1, 1);
+              _main.globalCompositeOperation = "exclusion";
+              _main.fillStyle = chars[smap[y][x]].filter;
+              _main.fillRect(nx, i, 1, 1);
             }
             ii++;
           }
@@ -642,7 +650,7 @@
               p.pos.x = cX - 1
             }
 
-            // draw();
+            draw();
           }
         }
       }
@@ -792,15 +800,15 @@
 
       b.comment = b.name+'<br><h1>｢'+adj+noun+'｣ ('+year+')</h1><br>'+w+'x'+h+', 화소';
 
-      // if (config.language.includes("en")) {
-      //   let article = words.articles[Math.random() * words.articles.length | 0] + " ";
-      //   if (article.includes("(n)") && "aeiou".indexOf(adj[0]) !== -1) {
-      //     article = article.replace("(n)", "n");
-      //   } else if (article.includes("(n)")) {
-      //     article = article.replace("(n)", "");
-      //   }
-      //   b.comment = b.name+'<br><h1>\''+article+adj+noun+'\' ('+year+')</h1><br>'+w+'x'+h+', pixels';
-      // }
+      if (config.language.includes("en")) {
+        let article = words.articles[Math.random() * words.articles.length | 0] + " ";
+        if (article.includes("(n)") && "aeiou".indexOf(adj[0]) !== -1) {
+          article = article.replace("(n)", "n");
+        } else if (article.includes("(n)")) {
+          article = article.replace("(n)", "");
+        }
+        b.comment = b.name+'<br><h1>\''+article+adj+noun+'\' ('+year+')</h1><br>'+w+'x'+h+', pixels';
+      }
     }
 
     var _tooltip = document.getElementById("tooltip");
