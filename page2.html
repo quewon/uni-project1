@@ -2,8 +2,21 @@
 <html lang="ko" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>로봇 방물관</title>
+    <title>로봇 박물관</title>
     <style>
+      @media only screen and (max-width: 400px) {
+        canvas {
+          width: 90vw;
+          height: 90vw;
+        }
+      }
+      @media only screen and (max-height: 400px) {
+        canvas {
+          width: 90vh;
+          height: 90vh;
+        }
+      }
+
       html {
         font-family: 'Nanum Gothic Coding', monospace;
         --star: #faecd4;
@@ -15,11 +28,15 @@
         background-color: var(--star);
       }
 
-      canvas {
+      .centered {
         position: absolute;
         transform: translate(-50%, -50%);
         left: 50%;
         top: 50%;
+        color: var(--bg);
+      }
+
+      canvas {
         width: 400px;
         height: 400px;
         image-rendering: optimizeSpeed;
@@ -31,18 +48,51 @@
       }
 
       .hidden {
-        opacity: 0 !important;
+        opacity: 0;
         transition: 0.5s;
+      }
+
+      #tutorial {
+        text-align: center;
+        color: var(--bg);
+        background-color: var(--star);
+        padding: 1em;
+        opacity: 0.75;
+      }
+
+      #tt_wrapper {
+        text-align: center;
+        transition: 0.5s;
+      }
+      #tooltip {
+        display: inline-block;
+        color: var(--star);
+        background-color: var(--bg);
+        padding: 1em;
+        font-size: 0.75em;
+        text-align: left;
+      }
+      #tooltip h1 {
+        font-size: 1.25em;
+        margin: 0;
+        text-transform: uppercase;
       }
     </style>
   </head>
   <body>
-    <div id="loading">
+    <div id="loading" class="centered">
       *
     </div>
-    <canvas class="hidden" id="bg"></canvas>
-    <canvas class="hidden" id="main"></canvas>
-    <canvas id="ui"></canvas>
+    <canvas class="hidden centered" id="bg"></canvas>
+    <canvas class="hidden centered" id="main"></canvas>
+    <div id="tutorial" class="hidden centered">
+      <i>[← →] 방향키로 검은 점을 움직여<br>
+      박물관을 탐험해 보세요</i>
+    </div>
+    <div id="tt_wrapper" class="hidden centered">
+      <canvas id="ui"></canvas><br>
+      <div id="tooltip"></div>
+    </div>
   </body>
   <script src="sound/howler.core.js"></script>
   <script type="text/javascript">
@@ -226,10 +276,10 @@
       }, 100);
     }
 
-    var _canvas = document.getElementById("main");
-    var _main = _canvas.getContext("2d");
+    var _main = document.getElementById("main").getContext("2d");
     var _bg = document.getElementById("bg").getContext("2d");
-    var _ui = document.getElementById("ui").getContext("2d");
+    var _uic = document.getElementById("ui");
+    var _ui = _uic.getContext("2d");
     var _loop;
     function init() {
       cX = tiles.drops[0][0].length * config.tilesX;
@@ -242,6 +292,8 @@
       }
 
       Array.from(document.querySelectorAll("canvas")).forEach((el) => el.classList.remove("hidden"));
+
+      document.getElementById("tutorial").classList.remove("hidden");
 
       document.addEventListener("keydown", function(e) {
         if (e.repeat) return
@@ -262,7 +314,22 @@
         if (k == chars.player.history[0]) {
           chars.player.history.shift();
         }
-      })
+      });
+
+      // config.language = window.navigator.userLanguage || window.navigator.language;
+      // config.language = "ko";
+      // if (config.language.includes("en")) {
+      //   config.words = {
+      //     articles: ["a(n)", "the", "one", "to the", "to a(n)", "for a(n)", "for the", "atop the", "atop a(n)", "on a(n)", "on the", "some", "another"],
+      //     adjs: ["happy", "free", "seaside", "night-sky", "city", "peace", "peaceful", "somber", "sober", "dreaming", "machine", "dream", "clockwork", "digital", "analog", "goldberg"],
+      //     nouns: ["soul", "sea", "moment", "era", "giant", "automata", "android", "machine", "algorithm", "god", "goddess", "war"],
+      //   };
+      // } else {
+        config.words = {
+          adjs: ["행복의", "행복한", "자유의", "자유로운", "해변가에", "밤하늘에", "도시의", "평화의", "평화로운", "우울의", "우울한", "꿈의", "꿈꾸는", "시계태엽", "기계의", "디지털", "아날로그", "골드버그", "영원한", "눈 내리는", "가을", "봄", "여름", "겨울"],
+          nouns: ["마음", "바다", "순간", "시대", "거인", "오토마타", "안드로이드", "장치", "알고리즘", "신", "여신", "전쟁", "정원", "시스템", "사막", "새벽", "약속", "소원"],
+        };
+      // };
 
       generateMap();
       draw();
@@ -274,6 +341,8 @@
       _main.clearRect(0, 0, cX, vmax);
       _bg.clearRect(0, 0, cX, vmax);
       _ui.clearRect(0, 0, cX, vmax);
+
+      tooltip("");
 
       let vy = 0;
       let vx = chars.player.pos.x - Math.floor(cX/2);
@@ -296,7 +365,6 @@
         for (let y=vy; y<vy+config.viewport; y++) {
           for (let x=vx; x<cX; x++) {
             _bg.globalCompositeOperation = "source-over";
-            // console.log(cmap[y][x])
             if (cmap[y][x] != 0) {
               _bg.fillStyle = cmap[y][x];
               _bg.fillRect(x-vx, i, 1, 1);
@@ -457,12 +525,17 @@
         let i = chars.player.pos.y-2;
         let b = chars[smap[chars.player.pos.y-1][chars.player.pos.x]];
 
-        var dx = Math.round((cX - b.artwork[0].length) / 2);
-        var dy = Math.round((config.viewport - b.artwork.length) / 2);
+        var dx = 1;
+        var dy = 1;
+
+        _uic.width = b.artwork[0].length + 2;
+        _uic.height = b.artwork.length + 2;
+        _uic.style.width = config.cs * _uic.width + "px";
+        _uic.style.height = config.cs * _uic.height + "px";
 
         // 프레임
         _ui.fillStyle = "#172445";
-        _ui.fillRect(dx - 1, dy - 1, b.artwork[0].length + 2, b.artwork.length + 2);
+        _ui.fillRect(0, 0, _uic.width, _uic.height);
 
         for (y in b.artwork) {
           for (x in b.artwork[y]) {
@@ -477,6 +550,8 @@
             _ui.fillRect(nx, ny, 1, 1);
           }
         }
+
+        tooltip(b.comment);
       }
 
       window.requestAnimationFrame(draw);
@@ -532,6 +607,9 @@
                   }
                 }
               }
+              if (document.getElementById("tutorial")) {
+                document.getElementById("tutorial").remove();
+              }
               break;
             case map.right:
               if (p.history[0] != map.left) {
@@ -543,6 +621,9 @@
                     p.pos.y -= 1;
                   }
                 }
+              }
+              if (document.getElementById("tutorial")) {
+                document.getElementById("tutorial").remove();
               }
               break;
           }
@@ -648,14 +729,13 @@
       }
 
       config.viewport = Math.floor(document.getElementById("main").height);
+      config.cs = Math.floor(parseInt(getComputedStyle(_uic).width) / cX);
       if (config.viewport > cmap.length) config.viewport = cmap.length - 1;
 
       // 플레이어 생성
 
       chars.player.pos.y = tiles.drops[0].length - 2;
       chars.player.pos.x = (spawn*tiles.drops[0][0].length) + Math.floor(tiles.drops[0][0].length / 2);
-
-      console.log(botspawns);
 
       // 로봇 생성
       for (let y in map) {
@@ -665,10 +745,11 @@
           smap[by][x] = "B"+by+x;
 
           chars["B"+by+x] = {
+            name: "B"+by+x,
             artwork: generateArt(),
-            comment: generateComment(),
             filter: Math.floor(Math.random()*16777215).toString(16),
-          }
+          };
+          generateComment(chars["B"+by+x]);
         }
       }
     }
@@ -688,8 +769,37 @@
       return array
     }
 
-    function generateComment() {
-      return "🤖"
+    function generateComment(b) {
+      let words = config.words;
+
+      let adj = words.adjs[Math.random() * words.adjs.length | 0] + " ";
+      let noun = words.nouns[Math.random() * words.nouns.length | 0];
+      let year = new Date().getFullYear();
+      let w = b.artwork[0].length;
+      let h = b.artwork.length;
+
+      b.comment = b.name+'<br><h1>｢'+adj+noun+'｣ ('+year+')</h1><br>'+w+'x'+h+', 화소';
+
+      // if (config.language.includes("en")) {
+      //   let article = words.articles[Math.random() * words.articles.length | 0] + " ";
+      //   if (article.includes("(n)") && "aeiou".indexOf(adj[0]) !== -1) {
+      //     article = article.replace("(n)", "n");
+      //   } else if (article.includes("(n)")) {
+      //     article = article.replace("(n)", "");
+      //   }
+      //   b.comment = b.name+'<br><h1>\''+article+adj+noun+'\' ('+year+')</h1><br>'+w+'x'+h+', pixels';
+      // }
+    }
+
+    var _tooltip = document.getElementById("tooltip");
+    var _tt = document.getElementById("tt_wrapper");
+    function tooltip(title) {
+      if (title=="") {
+        _tt.classList.add("hidden");
+        return
+      }
+      _tt.classList.remove("hidden");
+      _tooltip.innerHTML = title;
     }
   </script>
 </html>

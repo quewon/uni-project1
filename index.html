@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko" dir="ltr">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>인공위성 보기 좋은 날</title>
-    <style>
+    <title>4444</title>
+    <style media="screen">
       @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
 
       @media only screen and (max-width: 600px) {
@@ -20,70 +20,28 @@
       }
 
       body {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background-color: var(--bg);
-        -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari */
-         -khtml-user-select: none; /* Konqueror HTML */
-           -moz-user-select: none; /* Old versions of Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
-                user-select: none; /* Non-prefixed version, currently
-                                      supported by Chrome, Edge, Opera and Firefox */
-        cursor: default;
+        background-color: var(--ui);
       }
 
-      span {
+      #container {
         position: absolute;
-        opacity: 0;
-      }
-
-      .star {
-        position: absolute;
-        color: var(--star);
-        /* transition: 0.25s; */
-        z-index: -1;
-        cursor: pointer;
-        text-align: center;
-
-        animation: glow 1s ease infinite alternate;
-      }
-
-      .one { opacity: 1; }
-      .two { opacity: 0.75; }
-      .three { opacity: 0.5; }
-
-      .small { font-size: 1em }
-      .medium { font-size: 1.25em }
-      .big { font=size: 1.5em }
-
-      .hidden {
-        opacity: 0 !important;
-        transition: 0.5s;
-      }
-
-      .centered {
-        position: absolute;
-        left: 50%;
-        top: 50%;
         transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        text-align: center;
+        color: var(--star);
       }
 
-      @keyframes glow {
-        from {
-          text-shadow: 0 0 20px var(--star), 0 0 10px var(--star);
-        }
-        to {
-          text-shadow: 0 0 30px var(--star), 0 0 10px var(--star);
-        }
+      hr {
+        margin: 1em;
+        border-color: var(--ui);
       }
 
       a {
         width: fit-content;
         height: fit-content;
         display: inline-block;
-        border: 1px solid var(--ui);
+        border: 1px solid var(--star);
         background-color: transparent;
         font-family: inherit;
         font-size: 1em;
@@ -97,17 +55,12 @@
         /* box-sizing: border-box; */
       }
       a:hover {
-        border: 1px solid var(--bg);
-        background-color: var(--ui);
+        border: 1px solid var(--ui);
+        background-color: var(--star);
         cursor: pointer;
       }
       a:active {
         opacity: 0.5;
-      }
-
-      a#intro {
-        border: none;
-        padding: 0;
       }
 
       a img {
@@ -115,305 +68,20 @@
         height: 3em;
       }
 
-      hr {
-        margin: 1em;
-        border-color: var(--ui);
-      }
-
-      .tooltip {
-        font-size: 0.75em;
-        opacity: 1;
-        transition: opacity 0.25s;
-        margin-top: 0.5em;
-      }
-      .selected .tooltip {
-        opacity: 1 !important;
-      }
-
-      #loading {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: var(--ui)
-      }
-
-      #line {
-        stroke: var(--star);
-        stroke-width: 0.1em;
-        fill: var(--ui);
-        opacity: 0.75;
-        z-index: -10;
-        fill-rule: nonzero;
-        position:fixed; top:0; left:0; height:100%; width:100%
-      }
-
-      path {
-        stroke-dasharray: 1;
-        stroke-dashoffset: 0;
-        animation: dash 5s;
-        transition: 0.5s;
-      }
-
-      @keyframes dash {
-        from {
-          stroke-dashoffset: 1;
-        }
-        to {
-          stroke-dashoffset: 0;
-        }
+      h1 {
+        margin: 0;
+        font-family: 'Times Roman', sans-serif;
       }
     </style>
   </head>
   <body>
-    <div id="loading">
-      *
+    <div id="container">
+      <h1>4 PAGES</h1>
+      <hr>
+      <a href="page1.html"><img src="img/star.png"></a><br>
+      <a href="page2.html"><img src="img/robot.png"></a><br>
+      <a href="page3.html"><img src="img/sheep.png"></a><br>
+      <a href="page4.html" style="margin-bottom:0"><img src="img/sheep.png"></a><br>
     </div>
-    <div id="title" class="hidden centered" style="display:none">
-      <a href="page2.html"><img src="img/robot.png"></a><a href="page3.html"><img src="img/star.png"></a><br>
-      <a href="page4.html" style="margin-bottom:0"><img src="img/sheep.png"></a><a href="page5.html" style="margin-bottom:0"><img src="img/sheep.png"></a>
-    </div>
-    <a id="intro" class="centered hidden" onclick="init()">
-      "인공위성 보기 좋은 날이야."
-    </a>
-    <svg id="line" preserveAspectRatio="none"></svg>
   </body>
-
-  <script src="sound/howler.core.js"></script>
-  <script type="text/javascript">
-    var config = {
-      speed: 10,
-      stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
-      lifespan: 4 * window.innerWidth,
-      consistency: 1000,
-    };
-
-    var sound = [
-      [
-        new Howl({src: "sound/0_0.wav"}),
-        new Howl({src: "sound/0_1.wav"}),
-        new Howl({src: "sound/0_2.wav"}),
-        new Howl({src: "sound/0_3.wav"}),
-        new Howl({src: "sound/0_4.wav"}),
-        new Howl({src: "sound/0_5.wav"}),
-        new Howl({src: "sound/0_6.wav"}),
-        new Howl({src: "sound/0_7.wav"}),
-        new Howl({src: "sound/0_8.wav"}),
-        new Howl({src: "sound/0_9.wav"}),
-      ],
-      [
-        new Howl({src: "sound/1_0.wav"}),
-        new Howl({src: "sound/1_1.wav"}),
-        new Howl({src: "sound/1_2.wav"}),
-        new Howl({src: "sound/1_3.wav"}),
-        new Howl({src: "sound/1_4.wav"}),
-        new Howl({src: "sound/1_5.wav"}),
-        new Howl({src: "sound/1_6.wav"}),
-        new Howl({src: "sound/1_7.wav"}),
-        new Howl({src: "sound/1_8.wav"}),
-        new Howl({src: "sound/1_9.wav"}),
-      ],
-      [
-        new Howl({src: "sound/2_0.wav"}),
-        new Howl({src: "sound/2_1.wav"}),
-        new Howl({src: "sound/2_2.wav"}),
-        new Howl({src: "sound/2_3.wav"}),
-        new Howl({src: "sound/2_4.wav"}),
-        new Howl({src: "sound/2_5.wav"}),
-        new Howl({src: "sound/2_6.wav"}),
-        new Howl({src: "sound/2_7.wav"}),
-        new Howl({src: "sound/2_8.wav"}),
-        new Howl({src: "sound/2_9.wav"}),
-      ]
-    ];
-
-    var _loading = document.getElementById("loading");
-    window.onload = function() {
-      let loading = setInterval(function() {
-        _loading.textContent = config.stars[Math.random() * config.stars.length | 0];
-
-        loaded = true;
-
-        check: for (lib in sound) {
-          for (sfx in sound[lib]) {
-            if (sound[lib][sfx].state() != "loaded") loaded = false;
-            break check;
-          }
-        }
-
-        if (loaded) {
-          document.getElementById("intro").classList.remove("hidden");
-          _loading.classList.add("hidden");
-          clearInterval(loading);
-        }
-      }, 100);
-
-      document.body.onclick = function() {
-        var line = _line.querySelector("path");
-        if (typeof(line) != undefined && line != null) {
-          line.remove();
-        }
-        Array.from(document.querySelectorAll('.selected')).forEach((el) => el.classList.remove('selected'));
-      }
-    }
-
-    function init() {
-      document.getElementById("title").style.display = "block";
-      document.getElementById("title").classList.remove("hidden");
-      document.getElementById("intro").remove();
-      update();
-    }
-
-    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    var timer = 0;
-
-    function update() {
-      if (timer % config.speed == 0) {
-        var star = document.createElement("span");
-
-        var type = Math.random() * config.stars.length | 0;
-        star.textContent = config.stars[type];
-        star.style.top = Math.floor(Math.random() * 100) + "%";
-        star.style.left = Math.floor(Math.random() * 100) + "%";
-
-        var tooltip = document.createElement("div");
-        tooltip.textContent = GenerateSatelliteLabel();
-        tooltip.className = "tooltip hidden";
-        star.appendChild(tooltip);
-
-        star.onmouseover = function() {
-          tooltip.classList.remove("hidden");
-        };
-
-        star.onmouseleave = function() {
-          tooltip.classList.add("hidden");
-        };
-
-        star.onclick = function(e) {
-          e.stopPropagation();
-          star.classList.add("selected");
-          drawLine(star);
-        };
-
-        setTimeout(function() {
-          document.body.appendChild(star);
-          star.classList.add("star");
-
-          var opacity = Math.floor(Math.random() * 3);
-          var volume = Math.floor(Math.random() * 3);
-          var size;
-
-          switch (volume) {
-            case 0:
-              sound[opacity][type].volume(0.6);
-              size = "small";
-              break;
-            case 1:
-              sound[opacity][type].volume(0.8);
-              size = "medium";
-              break;
-            case 2:
-              sound[opacity][type].volume(1);
-              size = "big";
-              break;
-          }
-
-          sound[opacity][type].play();
-
-          switch (opacity) {
-            case 0:
-              opacity = "one";
-              break;
-            case 1:
-              opacity = "two";
-              break;
-            case 2:
-              opacity = "three";
-              break;
-          }
-          star.classList.add(opacity);
-          star.classList.add(size);
-
-          var starInterval = setInterval(function() {
-            if (star.classList.contains("selected")) return
-
-            star.classList.add("hidden");
-            star.onclick = null;
-            setTimeout(function() {
-              star.remove();
-              clearInterval(starInterval);
-            }, 1000);
-          }, config.lifespan);
-        }, 100 + (Math.random() * (config.lifespan - config.consistency) + config.consistency))
-
-        // 일정간격
-        // config.lifespan / 2
-        // 랜덤
-        // 100 + (Math.random() * config.lifespan)
-      }
-
-      timer++;
-      window.requestAnimationFrame(update);
-    }
-
-    function GenerateSatelliteLabel() {
-      var t = "";
-
-      var year = Math.floor(Math.random() * (new Date().getFullYear() - 1956) + 1957);
-
-      t += year + "-";
-
-      var d1 = Math.floor(Math.random() * 10);
-      var d2 = Math.floor(Math.random() * 10);
-      var d3 = Math.floor(Math.random() * 10);
-
-      t += d1 + "" + d2 + "" + d3;
-
-      var stringLength = Math.floor(Math.random() * 3) + 1;
-
-      for (let i=0; i<stringLength; i++) {
-        t += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-
-      return t
-    }
-
-    var _line = document.getElementById("line");
-    var firstCoords = { x: undefined, y: undefined };
-    var lineElements = [];
-    function drawLine(star) {
-      var rect = star.getBoundingClientRect();
-      var x = rect.left + (rect.width / 2);
-      var y = rect.top + (rect.height / 2);
-
-      var line = _line.querySelectorAll("path");
-      var line = line[line.length - 1];
-
-      if (typeof(line) != undefined && line != null && !line.getAttribute('d').includes('Z')) {
-        let d = line.getAttribute('d');
-
-        if (x == firstCoords.x && y == firstCoords.y) {
-          line.setAttribute('d', d+" Z");
-          Array.from(document.querySelectorAll('.selected')).forEach((el) => el.classList.remove('selected'));
-          setInterval(function() {
-            line.classList.add("hidden");
-            setInterval(function() {
-              line.remove();
-            }, 500);
-          }, config.lifespan);
-        } else {
-          line.setAttribute('d', d+" "+x+" "+y);
-        }
-        return
-      }
-
-      var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      l.setAttribute('d', "M "+x+" "+y);
-      l.setAttribute("vector-effect", "non-scaling-stroke");
-      l.setAttribute("pathLength", 1);
-      firstCoords.x = x;
-      firstCoords.y = y;
-      _line.append(l);
-    }
-  </script>
 </html>
