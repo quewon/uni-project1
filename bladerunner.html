@@ -18,6 +18,18 @@
         background-color: white;
       }
 
+      .hidden {
+        opacity: 0;
+        transition: 0.5s;
+      }
+
+      .centered {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
       body {
         background-color: var(--star);
         color: var(--ui)
@@ -25,13 +37,244 @@
 
       h1 {
         font-family: 'Sunflower', sans-serif;
+        transition: 0.5s;
+        font-size: 1.25em;
+        margin: 0;
+      }
+
+      a {
+        width: fit-content;
+        height: fit-content;
+        display: inline-block;
+        border: 1px solid var(--ui);
+        background-color: transparent;
+        font-family: inherit;
+        font-size: 1em;
+        text-decoration: none;
+        color: var(--ui);
+        padding: 1em;
+        text-align: center;
+        transition: border 0.3s, background-color 0.3s, color 0.3s;
+      }
+      a:hover {
+        border: 1px solid var(--star);
+        background-color: var(--ui);
+        color: var(--star);
+        cursor: pointer;
+      }
+      a:active {
+        opacity: 0.5;
+      }
+
+      #game {
+        position: absolute;
+        width: 90%;
+        height: 90%;
+      }
+
+      .npc {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        font-size: 2.5em;
+        transition: 0.95s linear;
+        cursor: help;
+      }
+
+      .profile {
+        position: absolute;
+        transform: translate(1em, 1em);
+        transition: translate 0.25s, rotate 0.25s, opacity 0.5s;
+        padding: 1em;
+        background-color: var(--star);
+        border: 1px solid var(--ui);
+      }
+
+      .profile.rotated {
+        transform: translate(1em, 1em) rotate(-15deg);
+        transition: translate 0.25s, rotate 0.25s, opacity 0.5s;
       }
     </style>
   </head>
   <body>
-    <h1>안드로이드는 전기양의 꿈을 꾸는가?</h1>
-  </body>
-  <script>
+    <div id="loading" class="centered">
+      *
+    </div>
+    <h1 id="intro" class="hidden centered"><a onclick="init()">안드로이드는 전기양의 꿈을 꾸는가?</a></h1>
+    <div id="game" style="display:none" class="centered">
 
+    </div>
+  </body>
+  <script src="sound/howler.core.js"></script>
+  <script>
+  var config = {
+    updateSpeed: 1000,
+    npcCap: 20,
+    stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
+    humans: ["🧑‍⚕️", "🧑‍🎓", "🧑‍🏫", "🧑‍⚖️", "🧑‍🌾", "🧑‍🍳", "🧑‍🔧", "🧑‍🏭", "🧑‍💼", "🧑‍🔬", "🧑‍💻", "🧑‍🎤", "🧑‍🎨", "🧑‍✈️", "🧑‍🚀", "🧑‍🚒", "👮", "🕵️", "👷", "🦸", "🧙", "🧛"],
+  };
+
+  var sound = [
+    [
+      new Howl({src: "sound/0_0.wav"}),
+      new Howl({src: "sound/0_1.wav"}),
+      new Howl({src: "sound/0_2.wav"}),
+      new Howl({src: "sound/0_3.wav"}),
+      new Howl({src: "sound/0_4.wav"}),
+      new Howl({src: "sound/0_5.wav"}),
+      new Howl({src: "sound/0_6.wav"}),
+      new Howl({src: "sound/0_7.wav"}),
+      new Howl({src: "sound/0_8.wav"}),
+      new Howl({src: "sound/0_9.wav"}),
+    ],
+    [
+      new Howl({src: "sound/1_0.wav"}),
+      new Howl({src: "sound/1_1.wav"}),
+      new Howl({src: "sound/1_2.wav"}),
+      new Howl({src: "sound/1_3.wav"}),
+      new Howl({src: "sound/1_4.wav"}),
+      new Howl({src: "sound/1_5.wav"}),
+      new Howl({src: "sound/1_6.wav"}),
+      new Howl({src: "sound/1_7.wav"}),
+      new Howl({src: "sound/1_8.wav"}),
+      new Howl({src: "sound/1_9.wav"}),
+    ],
+    [
+      new Howl({src: "sound/2_0.wav"}),
+      new Howl({src: "sound/2_1.wav"}),
+      new Howl({src: "sound/2_2.wav"}),
+      new Howl({src: "sound/2_3.wav"}),
+      new Howl({src: "sound/2_4.wav"}),
+      new Howl({src: "sound/2_5.wav"}),
+      new Howl({src: "sound/2_6.wav"}),
+      new Howl({src: "sound/2_7.wav"}),
+      new Howl({src: "sound/2_8.wav"}),
+      new Howl({src: "sound/2_9.wav"}),
+    ]
+  ];
+
+  var _loading = document.getElementById("loading");
+  var _main = document.getElementById("game");
+  window.onload = function() {
+    let loading = setInterval(function() {
+      _loading.textContent = config.stars[Math.random() * config.stars.length | 0];
+
+      loaded = true;
+
+      check: for (lib in sound) {
+        for (sfx in sound[lib]) {
+          if (sound[lib][sfx].state() != "loaded") loaded = false;
+          break check;
+        }
+      }
+
+      if (loaded) {
+        document.getElementById("intro").classList.remove("hidden");
+        _loading.classList.add("hidden");
+        clearInterval(loading);
+      }
+    }, 100);
+  }
+
+  function init() {
+    document.getElementById("game").style.display = "block";
+    document.getElementById("game").classList.remove("hidden");
+    document.getElementById("intro").remove();
+    setup();
+    setInterval(update, config.updateSpeed);
+  }
+
+  var npcs = [];
+  function update() {
+    for (let i in npcs) {
+      npcs[i].update();
+    }
+  }
+
+  function setup() {
+    for (let i=0; i<=config.npcCap; i++) {
+      npcs.push(new NPC("human"));
+    }
+  }
+
+  class NPC {
+    constructor(type) {
+      this.type = type;
+      this.icon = config.humans[Math.random() * config.humans.length | 0];
+      this.pos = {};
+      this.pos.x = Math.floor(Math.random() * 90) + 5;
+      this.pos.y = Math.floor(Math.random() * 90) + 5;
+      this.speed = 1;
+
+      this.div = document.createElement("div");
+      this.div.className = "npc";
+      this.div.textContent = this.icon;
+      this.div.style.top = this.pos.y + "%";
+      this.div.style.left = this.pos.x + "%";
+      this.div.id = npcs.length;
+
+      this.prof = document.createElement("div");
+      this.prof.className = "profile rotated hidden";
+      this.prof.innerHTML = this.icon;
+      this.div.onmouseover = function(e) {
+        // npc.prof.classList.add("rotated");
+
+        let npc = npcs[this.id];
+        npc.profileFollow(e);
+        npc.prof.classList.remove("hidden");
+        npc.prof.classList.remove("rotated");
+      };
+      this.div.onmousemove = function(e) {
+        let npc = npcs[this.id];
+        npc.profileFollow(e);
+      };
+      this.div.onmouseout = function() {
+        let npc = npcs[this.id];
+        npc.prof.classList.add("hidden");
+      };
+      document.body.appendChild(this.prof);
+      _main.appendChild(this.div);
+    }
+    update() {
+      var random = Math.floor(Math.random() * 4);
+
+      switch (random) {
+        case 0:
+          this.pos.x += this.speed;
+          break;
+        case 1:
+          this.pos.x -= this.speed;
+          break;
+        case 2:
+          this.pos.y += this.speed;
+          break;
+        case 3:
+          this.pos.y -= this.speed;
+          break;
+      }
+
+      if (this.pos.x > 95) {
+        this.pos.x = 95;
+      } else if (this.pos.x < 5) {
+        this.pos.x = 5;
+      }
+      if (this.pos.y > 95) {
+        this.pos.y = 95
+      } else if (this.pos.y < 5) {
+        this.pos.y = 5;
+      }
+
+      this.div.style.top = this.pos.y + "%";
+      this.div.style.left = this.pos.x + "%";
+    }
+    profileFollow(e) {
+      let x = e.clientX;
+      let y = e.clientY;
+
+      console.log(x, y);
+
+      this.prof.style.left = x+"px";
+      this.prof.style.top = y+"px";
+    }
+  }
   </script>
 </html>
