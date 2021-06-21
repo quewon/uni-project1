@@ -34,6 +34,10 @@
         cursor: default;
       }
 
+      ::selection {
+        background-color: white;
+      }
+
       span {
         position: absolute;
         opacity: 0;
@@ -174,7 +178,7 @@
       speed: 10,
       stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
       lifespan: 4 * window.innerWidth,
-      consistency: 1000,
+      consistency: 500,
     };
 
     var sound = [

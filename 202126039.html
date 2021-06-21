@@ -72,10 +72,15 @@
         height: 3em;
       }
 
-      h1 {
-        margin: 0;
+      .title {
+        margin: -25px;
+        margin-bottom: 0;
         font-family: 'Times Roman', 'Times New Roman', serif;
       }
+      .title.one { opacity: 0.1 }
+      .title.two { opacity: 0.2 }
+      .title.three { opacity: 0.35 }
+      .title.four { opacity: 1 }
 
       footer {
         position: fixed;
@@ -98,7 +103,10 @@
   </head>
   <body>
     <div id="container">
-      <h1>4 PAGES</h1>
+      <h1 class="title one">4 PAGES</h1>
+      <h1 class="title two">4 PAGES</h1>
+      <h1 class="title three">4 PAGES</h1>
+      <h1 class="title four">4 PAGES</h1>
       <hr>
       <a href="bladerunner.html"><img src="img/sheep.png"></a><br>
       <a href="satellites.html"><img src="img/star.png"></a><br>

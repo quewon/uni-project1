@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>로봇 미술관</title>
     <style>
-
       html {
         font-family: 'Nanum Gothic Coding', monospace;
         --star: #faecd4;
@@ -14,6 +13,10 @@
 
       body {
         background-color: var(--star);
+      }
+
+      ::selection {
+        background-color: white;
       }
 
       .centered {
@@ -358,9 +361,9 @@
               _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
-              _bg.globalCompositeOperation = "exclusion";
-              _bg.fillStyle = "#172445";
-              _bg.fillRect(nx, i, 1, 1);
+              // _bg.globalCompositeOperation = "exclusion";
+              // _bg.fillStyle = "#172445";
+              // _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
@@ -397,9 +400,9 @@
               _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
-              _bg.globalCompositeOperation = "exclusion";
-              _bg.fillStyle = "#172445";
-              _bg.fillRect(nx, i, 1, 1);
+              // _bg.globalCompositeOperation = "exclusion";
+              // _bg.fillStyle = "#172445";
+              // _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
@@ -437,9 +440,9 @@
               _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
-              _bg.globalCompositeOperation = "exclusion";
-              _bg.fillStyle = "#172445";
-              _bg.fillRect(nx, i, 1, 1);
+              // _bg.globalCompositeOperation = "exclusion";
+              // _bg.fillStyle = "#172445";
+              // _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
@@ -477,9 +480,9 @@
               _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
-              _bg.globalCompositeOperation = "exclusion";
-              _bg.fillStyle = "#172445";
-              _bg.fillRect(nx, i, 1, 1);
+              // _bg.globalCompositeOperation = "exclusion";
+              // _bg.fillStyle = "#172445";
+              // _bg.fillRect(nx, i, 1, 1);
 
               // 블렌딩모드
               _bg.globalCompositeOperation = "hard-light";
@@ -590,7 +593,19 @@
       }
 
       if (timer % 2 == 0) {
-        draw();
+        let vmax = config.viewport;
+        let vy = 0;
+        let vx = chars.player.pos.x - config.halfcX;
+
+        let halfvmax = config.halfVP;
+        if (chars.player.pos.y >= halfvmax) {
+          if (chars.player.pos.y >= cY - halfvmax) {
+            vy = cY - vmax;
+          } else {
+            vy = chars.player.pos.y - halfvmax;
+          }
+        }
+        drawScene(vx, vy, vmax);
       }
     }
 
