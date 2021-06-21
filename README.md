@@ -37,3 +37,7 @@ i just hope prof gets it
 also, to english speakers: sucks to be you
 
 no but i did change some of the text in the third page (art.html) to be english and then the rest i didn't have enough time for
+
+<hr>
+
+lovely icon illustrations by [@kev](https://twitter.com/shakespiel)
