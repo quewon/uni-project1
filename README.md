@@ -25,6 +25,7 @@ my first assignment for this web programming class i'm taking in university
 the only requirement was that i make five responsive web pages
 
 so of course i got a bit carried away
+
 i ended up making:
 * one *where's waldo* style minigame
 * two interactive playable things
