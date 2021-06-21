@@ -2,15 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>4444</title>
+    <title>🤖🤖🤖🤖</title>
     <style media="screen">
       @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
-
-      @media only screen and (max-width: 600px) {
-        html {
-          font-size: 1.25em;
-        }
-      }
 
       html {
         font-family: 'Nanum Gothic Coding', monospace;
@@ -28,12 +22,12 @@
       }
 
       #container {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        top: 50%;
-        left: 50%;
+        margin: auto;
+        margin-top: 50px;
+        width: fit-content;
         text-align: center;
         color: var(--star);
+        height: 100%;
       }
 
       hr {
@@ -71,6 +65,12 @@
         width: 3em;
         height: 3em;
       }
+      a p {
+        width: 3em;
+        font-size: 1em;
+        line-height: 3em;
+        margin: 0;
+      }
 
       .title {
         margin: -25px;
@@ -83,12 +83,14 @@
       .title.four { opacity: 1 }
 
       footer {
-        position: fixed;
-        bottom: 3%;
+        position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        bottom: 1em;
         font-size: 0.75em;
         color: var(--star);
+        text-align: center;
+        width: fit-content;
       }
       footer a {
         border: 0;
@@ -99,6 +101,16 @@
         border: 0;
         color: var(--ui);
       }
+
+      @media only screen and (max-width: 600px) {
+        html {
+          font-size: 1.25em;
+        }
+        footer {
+          position: relative;
+          margin-top: 5em;
+        }
+      }
     </style>
   </head>
   <body>
@@ -107,12 +119,17 @@
       <h1 class="title two">4 PAGES</h1>
       <h1 class="title three">4 PAGES</h1>
       <h1 class="title four">4 PAGES</h1>
+      <br>
+      🤖을 주제로 한 웹페이지 4가지<br>
       <hr>
       <a href="bladerunner.html"><img src="img/sheep.png"></a><br>
       <a href="satellites.html"><img src="img/star.png"></a><br>
-      <a href="art.html"><img src="img/sheep.png"></a><br>
+      <a href="art.html"><p>🌃</p></a><br>
       <a href="history.html" style="margin-bottom:0"><img src="img/robot.png"></a><br>
     </div>
-    <footer>아이콘 일러스트 : <a href="https://twitter.com/shakespiel">@kev</a></footer>
+    <footer>
+      웹 프로그래밍 기초 1학년 1학기 - 2021.6.21 - 202126039학번<br><br>
+      아이콘 일러스트 : <a href="https://twitter.com/shakespiel">@kev</a>
+    </footer>
   </body>
 </html>

@@ -1,28 +1,215 @@
 <!DOCTYPE html>
 <html lang="ko" dir="ltr">
   <head>
-    <meta charset="utf-8">
-    <title></title>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로봇 이야기</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@500&display=swap');
 
       html {
         font-family: 'Nanum Gothic Coding', monospace;
         --star: #faecd4;
         --ui: #6c9bb8;
         --bg: #172445;
+        --link: #ed6f78;
       }
 
       body {
         background-color: var(--ui);
-        color: var(--bg)
+        color: var(--star);
+        margin: 0;
+        line-height: 1.2em;
       }
 
       ::selection {
         background-color: white;
       }
+
+      h1 {
+        font-family: 'Sunflower', serif;
+        font-size: 2em;
+        line-height: 1.2em;
+      }
+
+      header {
+        position: fixed;
+        width: 20%;
+        height: 100%;
+        background-color: var(--star);
+        color: var(--bg);
+        padding: 1em;
+        box-sizing: border-box;
+        word-break: keep-all;
+      }
+
+      #main {
+        padding: 1em;
+        float: right;
+        width: 60%;
+        margin-left: 10%;
+        margin-right: 10%;
+        box-sizing: border-box;
+      }
+
+      header hr {
+        border-color: var(--star);
+      }
+      hr {
+        border-color: var(--ui);
+      }
+
+      section {
+        padding: 1em;
+      }
+
+      a {
+        text-decoration: underline;
+        color: inherit;
+      }
+      a:hover {
+        background-color: var(--star);
+        color: var(--ui)
+      }
+      a:active {
+        opacity: 0.75;
+      }
+
+      #back {
+        position: fixed;
+        left: 1em;
+        bottom: 1em;
+        border: 1px solid var(--bg);
+        color: var(--bg);
+        z-index: 10;
+        padding: 1em;
+        cursor: pointer;
+        height: 1em;
+        overflow: hidden;
+        width: 1em;
+        white-space: nowrap;
+        transition: 0.5s;
+        text-decoration: none;
+      }
+      #back:hover {
+        width: 13em;
+      }
+      #back:active {
+        opacity: 0.5;
+      }
+
+      img {
+        margin: 1em;
+        margin-bottom: 3em;
+        width: 50%;
+      }
+
+      @media only screen and (max-width: 600px) {
+        body {
+          font-size: 20px;
+        }
+        header {
+          position: relative;
+          width: 100%;
+          height: 30%;
+        }
+        #main {
+          width: 100%;
+          margin: 0;
+        }
+
+        #table {
+          display: none;
+        }
+
+        img {
+          width: 80%
+        }
+      }
     </style>
   </head>
   <body>
+    <a id="back" href="202126039.html">← &nbsp;메인페이지로 돌아가기</a>
+
+    <header>
+      <h1>로봇 이야기</h1>
+      <div id="table">
+        <hr>
+        <ol>
+          <li><a href="#myth">신화 속 로봇</a></li>
+          <li><a href="#film">영화 속 로봇</a></li>
+        </ol>
+      </div>
+    </header>
+
+    <div id="main">
+      <section>
+        아이작 아시모프가 1950년 발간한 소설인 'I, Robot'에서 제안된 로봇의 행동에 관한 3가지 원칙:
+
+        <ol>
+          <li>로봇은 인간에게 해를 끼쳐서는 안 되며, 위험에 처해 있는 인간을 방관해서도 안 된다.</li>
+          <li>로봇은 인간의 명령에 반드시 복종해야만 한다. 단, 제1법칙을 거스를 경우에는 제외다.</li>
+          <li>로봇은 자기 자신을 보호해야만 한다. 단, 제1법칙과 제2법칙을 걸러버릴경우는 예외다.</li>
+        </ol>
+      </section>
+
+      <section id="myth">
+        <h1>신화 속 로봇</h1>
+        <hr>
+        <ul>
+          <li>
+            <a href="https://en.wikipedia.org/wiki/Dragon%27s_teeth_(mythology)">카드모스의 용아병</a><br>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cadmus_teeth.jpg/220px-Cadmus_teeth.jpg" alt="">
+          </li>
+          <li>
+            <a href="https://namu.wiki/w/갈라테아">피그말리온의 갈라테아</a><br>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/Robert_Le_Lorrain%2C_Galatea%2C_1701%2C_NGA_41720.jpg" alt="">
+          </li>
+          <li>
+            <a href="https://namu.wiki/w/탈로스">탈로스</a><br>
+            <img src="https://www.wondersandmarvels.com/wp-content/uploads/2012/03/talos2-1.jpg" alt="">
+          </li>
+          <li>
+            <a href="https://ko.wikipedia.org/wiki/열자">《열자(列子)》</a> 5장 중 등장한 인조 인간<br>
+            <img src="https://postfiles.pstatic.net/MjAxNzAxMjhfMTkx/MDAxNDg1NjAzNTcxODIw.pvFr-gNokx5mRX8GILtfTia1_Lq3q3Omdala9ddQWN8g.t0nwImx7-5YnVKhUyXj7hw2TPh8dQ6pjixUi6rCrXusg.JPEG.swings81/art5013020271.jpg?type=w3" alt="">
+          </li>
+          <li>
+            <a href="https://ko.wikipedia.org/wiki/골렘">골렘</a><br>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Prague-golem-reproduction.jpg" alt="">
+          </li>
+        </ul>
+      </section>
+
+      <section id="film">
+        <h1>영화 속 로봇</h1>
+        <hr>
+        <ul>
+          <li>
+            2001: 스페이스 오디세이 (1968) - HAL 9000<br>
+            <img src="https://www.indiewire.com/wp-content/uploads/2018/11/shutterstock_5886285ag.jpg" alt="">
+          </li>
+          <li>
+            터미네이터 (1984) - 터미네이터<br>
+            <img src="https://i.guim.co.uk/img/media/4cdd4c0fecb8d459f341a1c6fc6dc44a629e768e/81_97_1961_1176/master/1961.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=f3bb283b67443ebc3d0faa772121f9e7" alt="">
+          </li>
+          <li>
+            그녀 (2013) - 사만다<br>
+            <img src="https://i.pinimg.com/originals/26/ef/94/26ef94817693a4d9d64b8b6109fa8d9c.jpg" alt="">
+          </li>
+          <li>
+            엑스 마키나 (2014) - 에이바<br>
+            <img src="https://www.telegraph.co.uk/content/dam/film/ex-machina/ex-machina-robots-xlarge.jpg" alt="">
+          </li>
+          <li>
+            채피 (2015) - 채피<br>
+            <img src="https://media.vanityfair.com/photos/54f86fecebd1a8c7648a0635/master/pass/chappie-review-richard-lawson-robot.jpg" alt="">
+          </li>
+          <li>
+            승리호 (2021) - 업동이<br>
+            <img src="http://res.heraldm.com/content/image/2021/02/07/20210207000133_0.jpg" alt="">
+          </li>
+        </ul>
+      </section>
+    </div>
   </body>
 </html>

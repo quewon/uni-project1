@@ -2,7 +2,7 @@
 <html lang="ko" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>블레이드 러너</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@500&display=swap');
@@ -12,6 +12,7 @@
         --star: #faecd4;
         --ui: #6c9bb8;
         --bg: #172445;
+        --size: 20vw;
       }
 
       ::selection {
@@ -51,7 +52,6 @@
         font-family: inherit;
         font-size: 1em;
         text-decoration: none;
-        color: var(--ui);
         padding: 1em;
         text-align: center;
         transition: border 0.3s, background-color 0.3s, color 0.3s;
@@ -66,10 +66,16 @@
         opacity: 0.5;
       }
 
+      a img {
+        width: 3em;
+        height: 3em;
+      }
+
       #game {
         position: absolute;
         width: 90%;
         height: 90%;
+        overflow: hidden;
       }
 
       .npc {
@@ -77,40 +83,167 @@
         transform: translate(-50%, -50%);
         font-size: 2.5em;
         transition: 0.95s linear;
-        cursor: help;
+        cursor: pointer;
+        z-index: 0;
       }
 
       .profile {
         position: absolute;
         transform: translate(1em, 1em);
         transition: translate 0.25s, rotate 0.25s, opacity 0.5s;
-        padding: 1em;
+        padding: 0.5em;
         background-color: var(--star);
         border: 1px solid var(--ui);
+        pointer-events: none;
       }
 
-      .profile.rotated {
-        transform: translate(1em, 1em) rotate(-15deg);
-        transition: translate 0.25s, rotate 0.25s, opacity 0.5s;
+      #viewfinder {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        border: 1px solid var(--ui);
+        border-radius: 50%;
+        width: var(--size);
+        height: var(--size);
+        box-shadow: 0 0 0 9999px var(--star);
+        transition: border-radius 0.5s, width 0.5s, height 0.5s;
+        overflow: visible;
+      }
+      #viewfinder.end {
+        border-radius: 0;
+        width: 200%;
+        height: 200%;
+      }
+
+      #tutorial {
+        bottom: 0;
+        text-align: center;
+        font-size: 1.2vw;
+        word-break: keep-all;
+      }
+
+      #timer {
+        top: 10%;
+        background-color: var(--ui);
+        color: var(--star);
+        border-radius: 50%;
+        padding: 1em;
+        height: 1em;
+        width: 1em;
+        text-align: center;
+        animation: pulse 1s infinite;
+        /* opacity: 1; */
+      }
+
+      .caught {
+        animation: shake 0.5s linear infinite;
+      }
+
+      @keyframes pulse {
+      	0% {
+      		transform: translate(-50%, -50%) scale(0.95);
+      		box-shadow: 0 0 0 0 rgba(108, 155, 184, 0.7);
+      	}
+
+      	70% {
+      		transform: translate(-50%, -50%) scale(1);
+      		box-shadow: 0 0 0 10px rgba(108, 155, 184, 0);
+      	}
+
+      	100% {
+      		transform: translate(-50%, -50%) scale(0.95);
+      		box-shadow: 0 0 0 0 rgba(108, 155, 184, 0);
+      	}
+      }
+
+      @keyframes shake {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        20% {
+          transform: translate(-50%, -50%) rotate(-20deg);
+        }
+        75% {
+          transform: translate(-50%, -50%) rotate(20deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+      }
+
+      #gameover {
+        text-align: center;
+        background-color: var(--ui);
+        color: var(--star);
+        padding: 1em;
+        opacity: 0.9;
+      }
+      #gameover a {
+        border: 1px solid var(--star);
+      }
+      #gameover a:hover {
+        border: 1px solid var(--ui);
+        background-color: var(--star);
+        color: var(--ui);
+      }
+
+      em {
+        color: #ed6f78;
+        font-style: normal;
+        font-weight: bold;
+      }
+
+      #back {
+        position: fixed;
+        left: 1em;
+        bottom: 1em;
+        background-color: var(--star);
+        color: var(--ui);
+        border: 1px solid var(--ui);
+        z-index: 10;
+        padding: 1em;
+        cursor: pointer;
+        height: 1em;
+        overflow: hidden;
+        width: 1em;
+        white-space: nowrap;
+        transition: 0.5s;
+        text-decoration: none;
+      }
+      #back:hover {
+        width: 13em;
+      }
+      #back:active {
+        opacity: 0.5;
       }
     </style>
   </head>
   <body>
+    <a id="back" href="202126039.html">← &nbsp;메인페이지로 돌아가기</a>
     <div id="loading" class="centered">
       *
     </div>
     <h1 id="intro" class="hidden centered"><a onclick="init()">안드로이드는 전기양의 꿈을 꾸는가?</a></h1>
-    <div id="game" style="display:none" class="centered">
-
+    <div id="game" style="display:none">
+    </div>
+    <div id="viewfinder" class="hidden centered end">
+      <span id="tutorial" class="hidden centered"><em>5초</em> 안에 숨어있는 <em>로봇</em>을 찾아보세요</span>
+    </div>
+    <span id="timer" class="centered hidden"></span>
+    <div id="gameover" class="centered" style="display:none">
+      <span></span><br><br>
+      <a onclick="setup()"><img src="img/sheep.png" /><br>재시도</a>
     </div>
   </body>
   <script src="sound/howler.core.js"></script>
   <script>
   var config = {
     updateSpeed: 1000,
-    npcCap: 20,
+    npcCap: Math.round(window.innerWidth / 30),
     stars: ["*", "✦", ".", "✵", "*", "·", "✧", "·", "+", "✺"],
     humans: ["🧑‍⚕️", "🧑‍🎓", "🧑‍🏫", "🧑‍⚖️", "🧑‍🌾", "🧑‍🍳", "🧑‍🔧", "🧑‍🏭", "🧑‍💼", "🧑‍🔬", "🧑‍💻", "🧑‍🎤", "🧑‍🎨", "🧑‍✈️", "🧑‍🚀", "🧑‍🚒", "👮", "🕵️", "👷", "🦸", "🧙", "🧛"],
+    locked: false,
+    time: 5,
   };
 
   var sound = [
@@ -154,6 +287,8 @@
 
   var _loading = document.getElementById("loading");
   var _main = document.getElementById("game");
+  var _viewfinder = document.getElementById("viewfinder");
+  var _timer = document.getElementById("timer");
   window.onload = function() {
     let loading = setInterval(function() {
       _loading.textContent = config.stars[Math.random() * config.stars.length | 0];
@@ -170,36 +305,84 @@
       if (loaded) {
         document.getElementById("intro").classList.remove("hidden");
         _loading.classList.add("hidden");
+        _viewfinder.classList.remove("hidden");
         clearInterval(loading);
       }
     }, 100);
+
+    document.addEventListener("mousemove", function(e) {
+      if (config.locked) return
+
+      let x = e.clientX;
+      let y = e.clientY;
+      _viewfinder.style.left = x + "px";
+      _viewfinder.style.top = y + "px";
+    })
   }
 
+  var _loop;
   function init() {
     document.getElementById("game").style.display = "block";
     document.getElementById("game").classList.remove("hidden");
+    document.getElementById("tutorial").classList.remove("hidden");
+    _timer.classList.remove("hidden");
+    setTimeout(function() {
+      document.getElementById("tutorial").classList.add("hidden");
+      setTimeout(function() {
+        document.getElementById("tutorial").remove()
+      }, 1000)
+    }, 2000);
     document.getElementById("intro").remove();
     setup();
-    setInterval(update, config.updateSpeed);
   }
 
   var npcs = [];
+  var timer;
   function update() {
+    timer--;
+
     for (let i in npcs) {
       npcs[i].update();
+    }
+
+    _timer.textContent = timer;
+
+    sound[1][7].play();
+
+    if (timer <= 0) {
+      gameOver()
     }
   }
 
   function setup() {
+    _endscreen.style.display = "none";
+    _viewfinder.classList.remove("end");
+    config.locked = false;
+    document.querySelectorAll('.npc').forEach(e => e.remove());
+    timer = config.time;
+    _timer.textContent = timer;
+
+    _main.style.display = "none";
     for (let i=0; i<=config.npcCap; i++) {
       npcs.push(new NPC("human"));
     }
+    npcs.push(new NPC("robot"));
+
+    setTimeout(function() {
+      _main.style.display = "block";
+
+      update();
+      _loop = setInterval(update, config.updateSpeed);
+    }, 500)
   }
 
   class NPC {
     constructor(type) {
       this.type = type;
       this.icon = config.humans[Math.random() * config.humans.length | 0];
+      if (type=="robot") {
+        this.icon = "🤖";
+      }
       this.pos = {};
       this.pos.x = Math.floor(Math.random() * 90) + 5;
       this.pos.y = Math.floor(Math.random() * 90) + 5;
@@ -212,26 +395,30 @@
       this.div.style.left = this.pos.x + "%";
       this.div.id = npcs.length;
 
-      this.prof = document.createElement("div");
-      this.prof.className = "profile rotated hidden";
-      this.prof.innerHTML = this.icon;
-      this.div.onmouseover = function(e) {
-        // npc.prof.classList.add("rotated");
-
+      // this.prof = document.createElement("div");
+      // this.prof.className = "profile hidden";
+      // this.prof.innerHTML = "프로필: 🧑";
+      // if (type=="robot") {
+      //   this.prof.innerHTML = "프로필: 🤖";
+      // }
+      this.div.onclick = function() {
         let npc = npcs[this.id];
-        npc.profileFollow(e);
-        npc.prof.classList.remove("hidden");
-        npc.prof.classList.remove("rotated");
+        npc.end();
       };
-      this.div.onmousemove = function(e) {
-        let npc = npcs[this.id];
-        npc.profileFollow(e);
-      };
-      this.div.onmouseout = function() {
-        let npc = npcs[this.id];
-        npc.prof.classList.add("hidden");
-      };
-      document.body.appendChild(this.prof);
+      // this.div.onmouseover = function(e) {
+      //   let npc = npcs[this.id];
+      //   npc.profileFollow(e);
+      //   npc.prof.classList.remove("hidden");
+      // };
+      // this.div.onmousemove = function(e) {
+      //   let npc = npcs[this.id];
+      //   npc.profileFollow(e);
+      // };
+      // this.div.onmouseout = function() {
+      //   let npc = npcs[this.id];
+      //   npc.prof.classList.add("hidden");
+      // };
+      // document.body.appendChild(this.prof);
       _main.appendChild(this.div);
     }
     update() {
@@ -270,11 +457,43 @@
       let x = e.clientX;
       let y = e.clientY;
 
-      console.log(x, y);
-
       this.prof.style.left = x+"px";
       this.prof.style.top = y+"px";
     }
+    end() {
+      if (config.locked) return
+
+      this.div.classList.add("caught");
+
+      if (this.type == "robot") {
+        youWin()
+      } else {
+        gameOver()
+      }
+    }
+  }
+
+  _endscreen = document.getElementById("gameover");
+  function youWin() {
+    clearInterval(_loop);
+    config.locked = true;
+    _viewfinder.classList.add("end");
+    sound[2][6].play();
+    sound[2][7].play();
+    sound[2][9].play();
+    _endscreen.querySelector("span").textContent = "덕분에 로봇을 물리쳤습니다!";
+    _endscreen.style.display = "block";
+  }
+
+  function gameOver() {
+    clearInterval(_loop);
+    config.locked = true;
+    _viewfinder.classList.add("end");
+    sound[2][3].play();
+    sound[2][5].play();
+    sound[2][8].play();
+    _endscreen.querySelector("span").textContent = "로봇이 달아났습니다...";
+    _endscreen.style.display = "block";
   }
   </script>
 </html>
