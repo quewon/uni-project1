@@ -23,6 +23,7 @@
 my first assignment for this web programming class i'm taking in university
 
 the only requirement was that i make five responsive web pages
+
 so of course i got a bit carried away
 i ended up making:
 * one *where's waldo* style minigame
@@ -33,4 +34,5 @@ i ended up making:
 i just hope prof gets it
 
 also, to english speakers: sucks to be you
+
 no but i did change some of the text in the third page (art.html) to be english and then the rest i didn't have enough time for
