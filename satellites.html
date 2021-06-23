@@ -188,7 +188,7 @@
     </style>
   </head>
   <body>
-    <a id="back" href="202126039.html">← &nbsp;메인페이지로 돌아가기</a>
+    <a id="back" href="index.html">← &nbsp;메인페이지로 돌아가기</a>
     <div id="loading">
       *
     </div>
@@ -258,10 +258,8 @@
 
         check: for (lib in sound) {
           for (sfx in sound[lib]) {
-            if (sound[lib][sfx].state() != "loaded") {
-              loaded = false;
-              break check;
-            }
+            if (sound[lib][sfx].state() != "loaded") loaded = false;
+            break check;
           }
         }
 
