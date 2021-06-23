@@ -84,9 +84,54 @@
         margin: 0;
         text-transform: uppercase;
       }
+
+      #back {
+        position: fixed;
+        left: 1em;
+        bottom: 1em;
+        background-color: var(--star);
+        color: var(--bg);
+        z-index: 10;
+        padding: 1em;
+        cursor: pointer;
+        height: 1em;
+        overflow: hidden;
+        width: 1em;
+        white-space: nowrap;
+        transition: 0.5s;
+        text-decoration: none;
+        border: 1px solid var(--bg);
+      }
+      #back:hover {
+        width: 12em;
+      }
+      #back:active {
+        opacity: 0.5;
+      }
+
+      #reset {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 1em;
+        padding: 0.5em;
+        border: 1px solid var(--bg);
+        color: var(--star);
+        cursor: pointer;
+        transition: 0.25s;
+        color: var(--bg);
+      }
+      #reset:hover {
+        background-color: var(--bg);
+        color: var(--star);
+      }
+      #reset:active {
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
+    <a id="back" href="202126039.html">← &nbsp;&nbsp;메인페이지로 돌아가기</a>
     <div id="loading" class="centered">
       *
     </div>
@@ -100,6 +145,9 @@
       <canvas id="ui"></canvas><br>
       <div id="tooltip"></div>
     </div>
+    <footer id="reset" onclick="generateMap()">
+      새로운 미술관 생성
+    </footer>
   </body>
   <script src="sound/howler.core.js"></script>
   <script type="text/javascript">
@@ -270,8 +318,10 @@
 
         check: for (lib in sound) {
           for (sfx in sound[lib]) {
-            if (sound[lib][sfx].state() != "loaded") loaded = false;
-            break check;
+            if (sound[lib][sfx].state() != "loaded") {
+              loaded = false;
+              break check;
+            }
           }
         }
 
@@ -689,6 +739,9 @@
       }
     };
     function generateMap() {
+      _tt.classList.add("hidden");
+      _uic.style.width = "400px";
+
       let botspawns = [];
 
       for (let y=0; y<config.tilesY; y++) {

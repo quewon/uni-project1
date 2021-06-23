@@ -161,9 +161,34 @@
       #intro {
         margin: 0;
       }
+
+      #back {
+        position: fixed;
+        left: 1em;
+        bottom: 1em;
+        background-color: var(--bg);
+        color: var(--star);
+        z-index: 10;
+        padding: 1em;
+        cursor: pointer;
+        height: 1em;
+        overflow: hidden;
+        width: 1em;
+        white-space: nowrap;
+        transition: 0.5s;
+        text-decoration: none;
+      }
+      #back:hover {
+        border: 1px solid var(--ui);
+        width: 13em;
+      }
+      #back:active {
+        opacity: 0.5;
+      }
     </style>
   </head>
   <body>
+    <a id="back" href="202126039.html">← &nbsp;메인페이지로 돌아가기</a>
     <div id="loading">
       *
     </div>
@@ -233,8 +258,10 @@
 
         check: for (lib in sound) {
           for (sfx in sound[lib]) {
-            if (sound[lib][sfx].state() != "loaded") loaded = false;
-            break check;
+            if (sound[lib][sfx].state() != "loaded") {
+              loaded = false;
+              break check;
+            }
           }
         }
 
