@@ -258,8 +258,10 @@
 
         check: for (lib in sound) {
           for (sfx in sound[lib]) {
-            if (sound[lib][sfx].state() != "loaded") loaded = false;
-            break check;
+            if (sound[lib][sfx].state() != "loaded") {
+              loaded = false;
+              break check;
+            }
           }
         }
 
